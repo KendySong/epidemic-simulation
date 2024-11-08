@@ -9,7 +9,7 @@ project "epidemic-simulation"
     location "build"    
 
     defines "SFML_STATIC"
-    files { "src/**.cpp", "src/**.hpp", "src/**.h", "libraries/include/ImGui/**.cpp" }
+    files { "src/**.cpp", "src/**.hpp", "src/**.h", "libraries/include/ImGui/**.cpp", "assets/**.*" }
 
     includedirs "libraries/*"
     libdirs "libraries/lib"
