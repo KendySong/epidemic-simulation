@@ -4,17 +4,21 @@
 #include <ImGui/imgui.h>
 #include <ImGui/imgui-SFML.h>
 
+#include "Camera.hpp"
+
 class Sandbox
 {
 public :
-	Sandbox(sf::RenderTarget* render);
+	Sandbox(sf::RenderWindow* window);
 	void handleSettings();
 	void update(float dt);
 	void render();
 
 private :
-	sf::RenderTarget* p_render;
+	sf::RenderWindow* p_window;
 
 	sf::Sprite m_background;
 	sf::Texture m_backgroundTex;
+	
+	Camera m_camera;
 };

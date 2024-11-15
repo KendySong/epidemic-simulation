@@ -9,10 +9,11 @@
 Application* Application::s_app = nullptr;
 Application::Application()
 {
-    p_window = new sf::RenderWindow(sf::VideoMode(Settings::instance.width, Settings::instance.height), "Epidemic simulation");
+    p_window = new sf::RenderWindow(sf::VideoMode(Settings::width, Settings::height), "Epidemic simulation");
     ImGui::SFML::Init(*p_window);
     p_sandbox = new Sandbox(p_window);
-    m_fps = 0;
+    m_fpsDisplay = 0;
+    m_fps = 0;  
 }
 
 Application* Application::instance() noexcept
@@ -33,8 +34,7 @@ int Application::run()
         {
             ImGui::SFML::ProcessEvent(*p_window, m_event);
             if (m_event.type == sf::Event::Closed)
-            {
-                ImGui::DestroyContext();
+            {               
                 p_window->close();
             }
         }      
@@ -64,6 +64,6 @@ int Application::run()
         p_window->display();
     }
 
-    
+    ImGui::SFML::Shutdown();
     return 0;
 }
