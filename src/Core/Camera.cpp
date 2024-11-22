@@ -21,10 +21,12 @@ void Camera::move()
 		view.move(offset);
 
 		m_lastMouseP = mousePos;
-		m_isMoving = true;
+		m_isMoving = true;		
 	}
 	else
 	{
 		m_isMoving = false;
 	}
+
+	
 }

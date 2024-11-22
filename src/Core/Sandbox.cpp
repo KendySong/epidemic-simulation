@@ -9,27 +9,25 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 	p_window = window;
 	m_backgroundTex.loadFromFile("../assets/img.jpg");
 	m_background.setTexture(m_backgroundTex);
-	m_camera = Camera(window);
+	camera = Camera(window);
 }
 
 void Sandbox::handleSettings()
 {
-	ImGui::SliderFloat("Sensitivity", &Settings::sensitivity, 0.1f, 100.0f);
+	ImGui::DragFloat("Sensitivity", &Settings::sensitivity, 0.1f);
+	ImGui::DragFloat("Zoom", &Settings::zoom, 0.1f);
 }
 
 void Sandbox::update(float dt)
 {
 	if (!ImGui::GetIO().WantCaptureMouse)
 	{
-		m_camera.move();
-	}
-	
-
-	
+		camera.move();
+	}	
 }
 
 void Sandbox::render()
 {
-	p_window->setView(m_camera.view);
+	p_window->setView(camera.view);
 	p_window->draw(m_background);
 }

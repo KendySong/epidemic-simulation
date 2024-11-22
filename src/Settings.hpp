@@ -12,7 +12,7 @@ public :
 
 
     static float sensitivity;
-
+    static float zoom;
 
 private :
     Settings();

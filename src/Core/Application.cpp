@@ -33,17 +33,26 @@ int Application::run()
         while (p_window->pollEvent(m_event))
         {
             ImGui::SFML::ProcessEvent(*p_window, m_event);
-            if (m_event.type == sf::Event::Closed)
-            {               
+            switch (m_event.type)
+            {
+            case sf::Event::Closed:
                 p_window->close();
+                break;
+
+            case sf::Event::MouseWheelMoved:
+                
+                Settings::zoom *= 1 - m_event.mouseWheel.delta * 0.1;
+                Settings::sensitivity = 0.5 * Settings::zoom;
+                p_sandbox->camera.view.zoom(1 - m_event.mouseWheel.delta * 0.1);
+                break;
             }
-        }      
+        }
 
         //Deltatime & FPS
         m_fps++;
         m_deltaTime = m_deltaClock.restart();
         ImGui::SFML::Update(*p_window, m_deltaTime);
-        p_sandbox->update(m_deltaTime.asSeconds());  
+        p_sandbox->update(m_deltaTime.asSeconds());
         if (m_fpsClock.getElapsedTime().asSeconds() >= 1)
         {
             m_fpsDisplay = m_fps;
@@ -55,9 +64,9 @@ int Application::run()
         p_window->clear();
         p_sandbox->render();
 
-        ImGui::Begin("Settings");   
-            ImGui::Text("FPS : %i", m_fpsDisplay);
-            p_sandbox->handleSettings();
+        ImGui::Begin("Settings");
+        ImGui::Text("FPS : %i", m_fpsDisplay);
+        p_sandbox->handleSettings();
         ImGui::End();
 
         ImGui::SFML::Render(*p_window);

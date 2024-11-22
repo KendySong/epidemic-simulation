@@ -14,11 +14,11 @@ public :
 	void update(float dt);
 	void render();
 
+	Camera camera;
+
 private :
 	sf::RenderWindow* p_window;
 
 	sf::Sprite m_background;
 	sf::Texture m_backgroundTex;
-	
-	Camera m_camera;
 };
