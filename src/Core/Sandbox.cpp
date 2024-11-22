@@ -7,15 +7,14 @@
 Sandbox::Sandbox(sf::RenderWindow* window)
 {
 	p_window = window;
-	m_backgroundTex.loadFromFile("../assets/img.jpg");
+	m_backgroundTex.loadFromFile("../assets/map-1.png");
 	m_background.setTexture(m_backgroundTex);
 	camera = Camera(window);
 }
 
 void Sandbox::handleSettings()
 {
-	ImGui::DragFloat("Sensitivity", &Settings::sensitivity, 0.1f);
-	ImGui::DragFloat("Zoom", &Settings::zoom, 0.1f);
+	
 }
 
 void Sandbox::update(float dt)

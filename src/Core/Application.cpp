@@ -14,6 +14,7 @@ Application::Application()
     p_sandbox = new Sandbox(p_window);
     m_fpsDisplay = 0;
     m_fps = 0;  
+    m_zoomFactor = 0;
 }
 
 Application* Application::instance() noexcept
@@ -40,10 +41,10 @@ int Application::run()
                 break;
 
             case sf::Event::MouseWheelMoved:
-                
-                Settings::zoom *= 1 - m_event.mouseWheel.delta * 0.1;
-                Settings::sensitivity = 0.5 * Settings::zoom;
-                p_sandbox->camera.view.zoom(1 - m_event.mouseWheel.delta * 0.1);
+                m_zoomFactor = 1 - m_event.mouseWheel.delta * 0.1;
+                Settings::zoom *= m_zoomFactor;
+                Settings::sensitivity = Settings::base_zoom * Settings::zoom;
+                p_sandbox->camera.view.zoom(m_zoomFactor);
                 break;
             }
         }
@@ -61,7 +62,7 @@ int Application::run()
         }
 
         //Render
-        p_window->clear();
+        p_window->clear(Settings::clear_color);
         p_sandbox->render();
 
         ImGui::Begin("Settings");

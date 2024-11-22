@@ -21,4 +21,5 @@ private :
 
 	sf::Sprite m_background;
 	sf::Texture m_backgroundTex;
+
 };

@@ -24,4 +24,5 @@ private:
 	int m_fps;
 
 	Sandbox* p_sandbox;
+	float m_zoomFactor;
 };
