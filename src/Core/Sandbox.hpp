@@ -1,4 +1,6 @@
 #pragma once
+#include <vector>
+
 #include <SFML/Graphics.hpp>
 
 #include <ImGui/imgui.h>
@@ -22,4 +24,5 @@ private :
 	sf::Sprite m_background;
 	sf::Texture m_backgroundTex;
 
+	std::vector<sf::RectangleShape> m_drawables;
 };
