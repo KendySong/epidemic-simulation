@@ -6,6 +6,7 @@ Camera::Camera(sf::RenderWindow* window)
 {
 	m_isMoving = false;
 	p_window = window;
+	m_zoomFactor = 0;
 	view = sf::View(Settings::screen_size / 2.0f, Settings::screen_size);
 }
 
@@ -26,7 +27,13 @@ void Camera::move()
 	else
 	{
 		m_isMoving = false;
-	}
+	}	
+}
 
-	
+void Camera::zoom(sf::Event& event)
+{
+	m_zoomFactor = 1 - event.mouseWheel.delta * 0.1;
+	Settings::zoom *= m_zoomFactor;
+	Settings::sensitivity = Settings::base_zoom * Settings::zoom;
+	view.zoom(m_zoomFactor);
 }

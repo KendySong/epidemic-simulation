@@ -13,8 +13,7 @@ Application::Application()
     ImGui::SFML::Init(*p_window);
     p_sandbox = new Sandbox(p_window);
     m_fpsDisplay = 0;
-    m_fps = 0;  
-    m_zoomFactor = 0;
+    m_fps = 0;     
 }
 
 Application* Application::instance() noexcept
@@ -41,10 +40,7 @@ int Application::run()
                 break;
 
             case sf::Event::MouseWheelMoved:
-                m_zoomFactor = 1 - m_event.mouseWheel.delta * 0.1;
-                Settings::zoom *= m_zoomFactor;
-                Settings::sensitivity = Settings::base_zoom * Settings::zoom;
-                p_sandbox->camera.view.zoom(m_zoomFactor);
+                p_sandbox->camera.zoom(m_event);
                 break;
             }
         }
@@ -66,8 +62,8 @@ int Application::run()
         p_sandbox->render();
 
         ImGui::Begin("Settings");
-        ImGui::Text("FPS : %i", m_fpsDisplay);
-        p_sandbox->handleSettings();
+            ImGui::Text("FPS : %i", m_fpsDisplay);
+            p_sandbox->handleSettings();
         ImGui::End();
 
         ImGui::SFML::Render(*p_window);
