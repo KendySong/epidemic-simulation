@@ -7,11 +7,16 @@ Settings::Settings()
     
 }
 
+//Window
 const std::uint32_t Settings::width  = 1280;
 const std::uint32_t Settings::height = 720;
 const sf::Vector2f  Settings::screen_size(Settings::width, Settings::height);
 const float         Settings::base_zoom = 0.75;
 const sf::Color     Settings::clear_color = sf::Color(38, 38, 38);
 
+//Controls
 float Settings::sensitivity = Settings::base_zoom;
 float Settings::zoom = 1;
+
+//City
+const float         Settings::home_size = 100;

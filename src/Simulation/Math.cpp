@@ -19,3 +19,10 @@ sf::Vector2f Math::unit(const sf::Vector2f& a)
 {
 	return a / Math::length(a);
 }
+
+sf::Vector2f Math::random(float xMin, float xMax, float yMin, float yMax)
+{
+	float tx = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+	float ty = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
+	return { tx * (xMax-xMin) + xMin, ty * (yMax - yMin) + yMin };
+}

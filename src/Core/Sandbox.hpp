@@ -7,6 +7,7 @@
 #include <ImGui/imgui-SFML.h>
 
 #include "Camera.hpp"
+#include "../Simulation/City.hpp"
 
 class Sandbox
 {
@@ -24,5 +25,5 @@ private :
 	sf::Sprite m_background;
 	sf::Texture m_backgroundTex;
 
-	std::vector<sf::RectangleShape> m_drawables;
+	City m_city;
 };
