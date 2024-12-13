@@ -7,8 +7,8 @@
 Sandbox::Sandbox(sf::RenderWindow* window)
 {
 	p_window = window;
-	m_backgroundTex.loadFromFile("../assets/img.jpg");
-	m_background.setTexture(m_backgroundTex);
+	//m_backgroundTex.loadFromFile("../assets/img.jpg");
+	//m_background.setTexture(m_backgroundTex);
 	camera = Camera(window);
 }
 
@@ -28,10 +28,10 @@ void Sandbox::update(float dt)
 void Sandbox::render()
 {
 	p_window->setView(camera.view);
-	p_window->draw(m_background);
+	//p_window->draw(m_background);
 
-	for (size_t i = 0; i < m_city.homes.size(); i++)
+	for (size_t i = 0; i < m_city.building.size(); i++)
 	{
-		p_window->draw(m_city.homes[i].rect);
+		p_window->draw(m_city.building[i].rect);
 	}
 }

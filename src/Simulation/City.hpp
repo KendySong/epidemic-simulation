@@ -10,8 +10,8 @@ public :
 	City();
 
 	std::vector<Human> humans;
-	std::vector<Building> homes;
+	std::vector<Building> building;
 
 private :
-	
+	bool superpose();
 };

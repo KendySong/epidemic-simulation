@@ -8,4 +8,5 @@ Building::Building(sf::Vector2f position)
 	rect = sf::RectangleShape(homeSize);
 	rect.setPosition(position - homeSize*0.5f);
 	rect.setFillColor(sf::Color::White);
+	color = sf::Color();
 }

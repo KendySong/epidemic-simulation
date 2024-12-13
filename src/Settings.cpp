@@ -19,4 +19,5 @@ float Settings::sensitivity = Settings::base_zoom;
 float Settings::zoom = 1;
 
 //City
-const float         Settings::home_size = 100;
+const float         Settings::home_size = 10;
+const sf::Vector2f  Settings::city_size = sf::Vector2f(16, 9);

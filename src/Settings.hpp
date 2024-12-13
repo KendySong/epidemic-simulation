@@ -20,7 +20,7 @@ public :
 
     //City
     static const float home_size;
-
+    static const sf::Vector2f city_size;
 
 private :
     Settings();
