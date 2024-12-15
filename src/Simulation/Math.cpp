@@ -39,5 +39,5 @@ sf::Vector2f Math::random(float xMin, float xMax, float yMin, float yMax)
 
 int Math::random(int min, int max)
 {
-	return (max - min) * (rand() / RAND_MAX) + min;
+	return (max - min) * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) + min;
 }

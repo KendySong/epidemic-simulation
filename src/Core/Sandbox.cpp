@@ -30,6 +30,9 @@ void Sandbox::render()
 	p_window->setView(camera.view);
 	//p_window->draw(m_background);
 
+	
+	p_window->draw(m_city.s);
+	p_window->draw(m_city.lines);
 	for (size_t i = 0; i < m_city.building.size(); i++)
 	{
 		p_window->draw(m_city.building[i].rect);

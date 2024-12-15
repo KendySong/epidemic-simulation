@@ -12,6 +12,13 @@ public :
 	std::vector<Human> humans;
 	std::vector<Building> building;
 
+
+	sf::VertexArray lines;
+
+	sf::Sprite s;
+	sf::Texture t;
+	sf::Image img;
+
 private :
-	bool superpose();
+	
 };

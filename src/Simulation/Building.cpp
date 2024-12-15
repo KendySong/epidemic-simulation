@@ -1,4 +1,5 @@
 #include "Building.hpp"
+#include "Math.hpp"
 #include "../Settings.hpp"
 
 Building::Building(sf::Vector2f position)
@@ -8,5 +9,5 @@ Building::Building(sf::Vector2f position)
 	rect = sf::RectangleShape(homeSize);
 	rect.setPosition(position - homeSize*0.5f);
 	rect.setFillColor(sf::Color::White);
-	color = sf::Color();
+	color = sf::Color(Math::random(0, 255), Math::random(0, 255), Math::random(0, 255));
 }
