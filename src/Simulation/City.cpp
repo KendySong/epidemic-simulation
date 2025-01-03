@@ -69,6 +69,62 @@ City::City()
 		}
 	}
 
+	//Compute intersection
+	for (size_t y = 0; y < Settings::city_size.y; y++)
+	{
+		for (size_t x = 0; x < Settings::city_size.x; x++)
+		{
+			for (int v = -1; v < 2; v++)
+			{
+				for (int h = -1; h < 2; h++)
+				{
+					if (h == 0 && v == 0) continue;
+					
+				}
+			}
+		}
+	}
+
+	generateRoad();
 	t.loadFromImage(img);
 	s.setTexture(t);
+}
+
+void City::generateRoad()
+{
+	for (size_t y = 0; y < Settings::city_size.y; y+=2)
+	{
+		for (size_t x = 0; x < Settings::city_size.x; x+=2)
+		{
+			int index = y * Settings::city_size.x + x;
+					
+			for (int v = -1; v < 2; v++)
+			{
+				for (int h = -1; h < 2; h++)
+				{		
+					int nIndex = (y + v) * Settings::city_size.x + x + h;
+					if (nIndex < 0 || nIndex >= building.size() || (v == 0 && h == 0))
+					{
+						continue;
+					}
+
+					sf::Vector2f dir = building[nIndex].position - building[index].position;
+
+					sf::VertexArray roadLine(sf::PrimitiveType::Lines);
+					roadLine.append(sf::Vertex(building[index].position, sf::Color::Red));
+					roadLine.append(sf::Vertex(building[index].position + sf::Vector2f(dir.x, 0), sf::Color::Red));
+
+					roadLine.append(sf::Vertex(building[index].position + sf::Vector2f(dir.x, 0), sf::Color::Red));
+					roadLine.append(sf::Vertex(building[index].position + dir, sf::Color::Red));
+
+					roads.push_back(roadLine);
+				}
+			}
+		}
+	}
+
+	for (size_t i = 0; i < roads.size(); i++)
+	{
+		//roads[0][0].position
+	}
 }

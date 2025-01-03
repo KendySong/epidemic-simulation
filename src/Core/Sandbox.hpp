@@ -26,4 +26,10 @@ private :
 	sf::Texture m_backgroundTex;
 
 	City m_city;
+
+	bool drawLine;
+	sf::VertexArray l1;
+	sf::VertexArray l2;
+	sf::Color l2Color;
+	sf::RectangleShape coline;
 };
