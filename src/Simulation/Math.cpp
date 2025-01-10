@@ -68,7 +68,7 @@ bool Math::lineIntersect(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c, sf::Vec
 	float t1 =  (cd.y  * ac.x - cd.x * ac.y) / det;
 	float t2 = -(-ab.y * ac.x + ab.x * ac.y) / det;
 	
-	if (a + ab * t1 == c + cd * t2 && (t1 <= 1 && t1 >= 0 && t2 <= 1 && t2 >= 0))
+	if (Math::distance(a + ab * t1, c + cd * t2) < 0.01f && (t1 <= 1 && t1 >= 0 && t2 <= 1 && t2 >= 0))
 	{
 		*o = a + ab * t1;
 		return true;

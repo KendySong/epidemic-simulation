@@ -14,11 +14,11 @@ public :
 	std::vector<Human> humans;
 	std::vector<Building> building;
 	std::vector<sf::VertexArray> roads;
+	sf::VertexArray gridLines;
+
+	std::vector<sf::RectangleShape> intersections;
 
 
-	sf::VertexArray lines;
-
-	
 	sf::Sprite s;
 	sf::Texture t;
 	sf::Image img;

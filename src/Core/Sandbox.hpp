@@ -25,11 +25,9 @@ private :
 	sf::Sprite m_background;
 	sf::Texture m_backgroundTex;
 
+	//Simulation
 	City m_city;
 
-	bool drawLine;
-	sf::VertexArray l1;
-	sf::VertexArray l2;
-	sf::Color l2Color;
-	sf::RectangleShape coline;
+	//Gui
+	bool m_drawGrid;
 };

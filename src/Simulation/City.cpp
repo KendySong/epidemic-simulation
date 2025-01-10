@@ -21,22 +21,23 @@ City::City()
 		}
 	}
 
-	lines = sf::VertexArray(sf::PrimitiveType::Lines);	
+	gridLines = sf::VertexArray(sf::PrimitiveType::Lines);	
 	for (size_t y = 0; y < Settings::city_size.y + 1; y++)
 	{
 		for (size_t x = 0; x < Settings::city_size.x + 1; x++)
 		{
 			//Horizontal line
-			lines.append(sf::Vertex(sf::Vector2f(0, y * caseSize.y)));
-			lines.append(sf::Vertex(sf::Vector2f(Settings::screen_size.x, y * caseSize.y)));
+			gridLines.append(sf::Vertex(sf::Vector2f(0, y * caseSize.y)));
+			gridLines.append(sf::Vertex(sf::Vector2f(Settings::screen_size.x, y * caseSize.y)));
 			
 			//Vertical line
-			lines.append(sf::Vertex(sf::Vector2f(x * caseSize.x, 0)));
-			lines.append(sf::Vertex(sf::Vector2f(x * caseSize.x, Settings::screen_size.y)));
+			gridLines.append(sf::Vertex(sf::Vector2f(x * caseSize.x, 0)));
+			gridLines.append(sf::Vertex(sf::Vector2f(x * caseSize.x, Settings::screen_size.y)));
 		}
 	}
 
-	//Generate road
+	//Generate voronoi
+	/*
 	img.create(Settings::screen_size.x, Settings::screen_size.y);
 	for (int y = 0; y < Settings::screen_size.y; y++)
 	{
@@ -68,40 +69,26 @@ City::City()
 			img.setPixel(x, y, building[targetIndex.y * Settings::city_size.y + targetIndex.x].color);		
 		}
 	}
-
-	//Compute intersection
-	for (size_t y = 0; y < Settings::city_size.y; y++)
-	{
-		for (size_t x = 0; x < Settings::city_size.x; x++)
-		{
-			for (int v = -1; v < 2; v++)
-			{
-				for (int h = -1; h < 2; h++)
-				{
-					if (h == 0 && v == 0) continue;
-					
-				}
-			}
-		}
-	}
-
-	generateRoad();
 	t.loadFromImage(img);
 	s.setTexture(t);
+	*/
+
+	generateRoad();
 }
 
 void City::generateRoad()
 {
-	for (size_t y = 0; y < Settings::city_size.y; y+=2)
+	//Generate road lines
+	for (size_t y = 0; y < Settings::city_size.y; y += 2)
 	{
-		for (size_t x = 0; x < Settings::city_size.x; x+=2)
+		for (size_t x = 0; x < Settings::city_size.x; x += 2)
 		{
 			int index = y * Settings::city_size.x + x;
-					
+
 			for (int v = -1; v < 2; v++)
 			{
 				for (int h = -1; h < 2; h++)
-				{		
+				{
 					int nIndex = (y + v) * Settings::city_size.x + x + h;
 					if (nIndex < 0 || nIndex >= building.size() || (v == 0 && h == 0))
 					{
@@ -123,8 +110,40 @@ void City::generateRoad()
 		}
 	}
 
+	//Compute inter road intersection
 	for (size_t i = 0; i < roads.size(); i++)
 	{
-		//roads[0][0].position
+		for (size_t j = 0; j < roads.size(); j++)
+		{
+			if (i == j)
+			{
+				continue;
+			}
+
+			sf::Vector2f intersectionPosition;
+			if (Math::lineIntersect(roads[i][0].position, roads[i][1].position, roads[j][2].position, roads[j][3].position, &intersectionPosition))
+			{
+				sf::RectangleShape rect(sf::Vector2f(2, 2));
+				rect.setPosition(intersectionPosition - sf::Vector2f(1, 1));
+				rect.setFillColor(sf::Color::Blue);
+				intersections.push_back(rect);
+			}
+		}
 	}
+
+	//Compute self road intersection
+	for (size_t i = 0; i < roads.size(); i++)
+	{
+		sf::Vector2f intersectionPosition;
+		if (Math::lineIntersect(roads[i][0].position, roads[i][1].position, roads[i][2].position, roads[i][3].position, &intersectionPosition))
+		{
+			sf::RectangleShape rect(sf::Vector2f(2, 2));
+			rect.setPosition(intersectionPosition - sf::Vector2f(1, 1));
+			rect.setFillColor(sf::Color::Blue);
+			intersections.push_back(rect);
+		}
+	}
+
+	//Create graph with nodes
+
 }
