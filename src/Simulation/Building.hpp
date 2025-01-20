@@ -5,8 +5,9 @@ class Building
 {
 public :
 	Building() = default;
-	Building(sf::Vector2f position);
+	Building(int id, sf::Vector2f position);
 
+	int id;
 	sf::Vector2f position;
 	sf::RectangleShape rect;
 	sf::Color color;

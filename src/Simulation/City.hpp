@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <map>
 
 #include <SFML/Graphics.hpp>
 
@@ -17,7 +18,7 @@ public :
 	sf::VertexArray gridLines;
 
 	std::vector<sf::RectangleShape> intersections;
-
+	std::map<int, int> builLink;
 
 	sf::Sprite s;
 	sf::Texture t;
@@ -26,4 +27,5 @@ public :
 
 private :
 	void generateRoad();
+	bool City::linkExist(std::map<int, int> links, int id);
 };

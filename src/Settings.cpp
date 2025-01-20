@@ -20,4 +20,4 @@ float Settings::zoom = 1;
 
 //City
 const float         Settings::home_size = 5;
-const sf::Vector2f  Settings::city_size = sf::Vector2f(16, 9);
+const sf::Vector2f  Settings::city_size = sf::Vector2f(3, 1);

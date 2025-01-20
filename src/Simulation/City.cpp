@@ -2,6 +2,7 @@
 
 #include "City.hpp"
 #include "Math.hpp"
+#include "Node.hpp"
 #include "../Settings.hpp"
 
 City::City()
@@ -14,7 +15,9 @@ City::City()
 	{
 		for (size_t x = 0; x < Settings::city_size.x; x++)
 		{
-			building.push_back(Building(Math::random(
+			building.push_back(Building(
+				y * Settings::city_size.x + x,
+				Math::random(
 				x * caseSize.x, (x + 1) * caseSize.x,
 				y * caseSize.y, (y + 1) * caseSize.y
 			)));
@@ -90,7 +93,9 @@ void City::generateRoad()
 				for (int h = -1; h < 2; h++)
 				{
 					int nIndex = (y + v) * Settings::city_size.x + x + h;
-					if (nIndex < 0 || nIndex >= building.size() || (v == 0 && h == 0))
+					bool canCheckLink = linkExist(builLink, index) && linkExist(builLink, nIndex);
+					bool linkExist = canCheckLink ? builLink[building[index].id] == building[nIndex].id || builLink[building[nIndex].id] == building[index].id : false;
+					if (nIndex < 0 || nIndex >= building.size() || (v == 0 && h == 0) || linkExist)
 					{
 						continue;
 					}
@@ -104,6 +109,8 @@ void City::generateRoad()
 					roadLine.append(sf::Vertex(building[index].position + sf::Vector2f(dir.x, 0), sf::Color::Red));
 					roadLine.append(sf::Vertex(building[index].position + dir, sf::Color::Red));
 
+					builLink[building[index].id] = building[nIndex].id;
+					builLink[building[nIndex].id] = building[index].id;
 					roads.push_back(roadLine);
 				}
 			}
@@ -115,11 +122,6 @@ void City::generateRoad()
 	{
 		for (size_t j = 0; j < roads.size(); j++)
 		{
-			if (i == j)
-			{
-				continue;
-			}
-
 			sf::Vector2f intersectionPosition;
 			if (Math::lineIntersect(roads[i][0].position, roads[i][1].position, roads[j][2].position, roads[j][3].position, &intersectionPosition))
 			{
@@ -131,19 +133,16 @@ void City::generateRoad()
 		}
 	}
 
-	//Compute self road intersection
-	for (size_t i = 0; i < roads.size(); i++)
-	{
-		sf::Vector2f intersectionPosition;
-		if (Math::lineIntersect(roads[i][0].position, roads[i][1].position, roads[i][2].position, roads[i][3].position, &intersectionPosition))
-		{
-			sf::RectangleShape rect(sf::Vector2f(2, 2));
-			rect.setPosition(intersectionPosition - sf::Vector2f(1, 1));
-			rect.setFillColor(sf::Color::Blue);
-			intersections.push_back(rect);
-		}
-	}
-
 	//Create graph with nodes
 
+}
+
+bool City::linkExist(std::map<int, int> links, int id)
+{
+	if (links.find(id) == links.end())
+	{
+		return false;
+	}
+
+	return true;
 }
