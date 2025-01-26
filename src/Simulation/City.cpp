@@ -15,11 +15,9 @@ City::City()
 	{
 		for (size_t x = 0; x < Settings::city_size.x; x++)
 		{
-			building.push_back(Building(
-				y * Settings::city_size.x + x,
-				Math::random(
-				x * caseSize.x, (x + 1) * caseSize.x,
-				y * caseSize.y, (y + 1) * caseSize.y
+			building.push_back(Building(Math::random(
+			x * caseSize.x, (x + 1) * caseSize.x,
+			y * caseSize.y, (y + 1) * caseSize.y
 			)));
 		}
 	}
@@ -82,9 +80,9 @@ City::City()
 void City::generateRoad()
 {
 	//Generate road lines
-	for (size_t y = 0; y < Settings::city_size.y; y += 2)
+	for (int y = 0; y < Settings::city_size.y; y += 2)
 	{
-		for (size_t x = 0; x < Settings::city_size.x; x += 2)
+		for (int x = 0; x < Settings::city_size.x; x += 2)
 		{
 			int index = y * Settings::city_size.x + x;
 
@@ -93,9 +91,7 @@ void City::generateRoad()
 				for (int h = -1; h < 2; h++)
 				{
 					int nIndex = (y + v) * Settings::city_size.x + x + h;
-					bool canCheckLink = linkExist(builLink, index) && linkExist(builLink, nIndex);
-					bool linkExist = canCheckLink ? builLink[building[index].id] == building[nIndex].id || builLink[building[nIndex].id] == building[index].id : false;
-					if (nIndex < 0 || nIndex >= building.size() || (v == 0 && h == 0) || linkExist)
+					if (nIndex < 0 || nIndex >= building.size() || (v == 0 && h == 0) || linkExist(building[index], &building[nIndex]))
 					{
 						continue;
 					}
@@ -109,8 +105,8 @@ void City::generateRoad()
 					roadLine.append(sf::Vertex(building[index].position + sf::Vector2f(dir.x, 0), sf::Color::Red));
 					roadLine.append(sf::Vertex(building[index].position + dir, sf::Color::Red));
 
-					builLink[building[index].id] = building[nIndex].id;
-					builLink[building[nIndex].id] = building[index].id;
+					building[index].links.push_back(&building[nIndex]);
+					building[nIndex].links.push_back(&building[index]);
 					roads.push_back(roadLine);
 				}
 			}
@@ -137,12 +133,14 @@ void City::generateRoad()
 
 }
 
-bool City::linkExist(std::map<int, int> links, int id)
+bool City::linkExist(const Building& building, Building* target)
 {
-	if (links.find(id) == links.end())
+	for (size_t i = 0; i < building.links.size(); i++)
 	{
-		return false;
+		if (building.links[i] == target)
+		{
+			return true;
+		}
 	}
-
-	return true;
+	return false;
 }

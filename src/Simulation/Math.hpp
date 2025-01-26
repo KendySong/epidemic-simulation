@@ -1,4 +1,8 @@
 #pragma once
+#define _USE_MATH_DEFINES
+#define M_PI_6 M_PI / 6
+#include <math.h>
+
 #include <SFML/Graphics.hpp>
 
 class Math
@@ -13,6 +17,7 @@ public :
 	static sf::Vector2f lerp(sf::Vector2f a, sf::Vector2f b, float t);
 	static float dot(sf::Vector2f a, sf::Vector2f b);
 	static bool lineIntersect(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c, sf::Vector2f d, sf::Vector2f* o);
+	static float getTemp(float time);
 };
 
 sf::Vector2f operator+(const sf::Vector2f& a, const sf::Vector2i& b);

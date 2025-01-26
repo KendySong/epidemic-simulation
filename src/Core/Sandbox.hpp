@@ -27,7 +27,11 @@ private :
 
 	//Simulation
 	City m_city;
+	sf::Clock m_clTime;
+	float m_temp;
 
 	//Gui
 	bool m_drawGrid;
+	std::vector<bool> m_drawStateRoad;
+
 };

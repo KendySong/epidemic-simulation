@@ -2,9 +2,8 @@
 #include "Math.hpp"
 #include "../Settings.hpp"
 
-Building::Building(int id, sf::Vector2f position)
+Building::Building( sf::Vector2f position)
 {
-	this->id = id;
 	this->position = position;
 	sf::Vector2f homeSize = sf::Vector2f(Settings::home_size, Settings::home_size);
 	rect = sf::RectangleShape(homeSize);

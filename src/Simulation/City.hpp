@@ -18,14 +18,15 @@ public :
 	sf::VertexArray gridLines;
 
 	std::vector<sf::RectangleShape> intersections;
-	std::map<int, int> builLink;
 
+	/*
 	sf::Sprite s;
 	sf::Texture t;
 	sf::Image img;
-	
+	*/
 
 private :
+
 	void generateRoad();
-	bool City::linkExist(std::map<int, int> links, int id);
+	bool City::linkExist(const Building& building, Building* target);
 };

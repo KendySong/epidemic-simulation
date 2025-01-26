@@ -1,4 +1,5 @@
 #include "Math.hpp"
+#include "../Settings.hpp"
 
 sf::Vector2f Math::toVec2f(const sf::Vector2i& a)
 {
@@ -52,6 +53,8 @@ float Math::dot(sf::Vector2f a, sf::Vector2f b)
 	return a.x * b.x + a.y * b.y;
 }
 
+
+
 bool Math::lineIntersect(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c, sf::Vector2f d, sf::Vector2f* o)
 {
 	sf::Vector2f ab = b - a;
@@ -74,4 +77,9 @@ bool Math::lineIntersect(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c, sf::Vec
 		return true;
 	}
 	return false;
+}
+
+float Math::getTemp(float time)
+{
+	return ((sin(M_PI_6 * (time - 3)) + 1) / 2.0f) * (Settings::tempMax - Settings::tempMin) + Settings::tempMin;
 }

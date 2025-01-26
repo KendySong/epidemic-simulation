@@ -22,6 +22,10 @@ public :
     static const float home_size;
     static const sf::Vector2f city_size;
 
+    //Context
+    static float tempMin;
+    static float tempMax;
+
 private :
     Settings();
 };
