@@ -24,11 +24,11 @@ void Sandbox::handleSettings()
 
 
 
-	ImGui::Text("Elapsed Time : %f", (m_clTime.getElapsedTime().asSeconds() * 12) / 24);
+	ImGui::Text("Elapsed Time : %f", m_clTime.getElapsedTime().asSeconds());
 	ImGui::Text("Temp in C : %f", m_temp);
 
 
-	ImGui::PlotLines("",
+	ImGui::PlotHistogram("",
 		tempRecords.data(),
 		static_cast<int>(tempRecords.size()),
 		0,
@@ -39,11 +39,11 @@ void Sandbox::handleSettings()
 
 	if (ImGui::TreeNodeEx("Miscellaneous [Debug]", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::Checkbox("Draw Grid", &m_drawGrid);
-		ImGui::Text("Number of intersection : %i", m_city.intersections.size());
+		ImGui::Checkbox("Draw Grid", &m_drawGrid);	
 		ImGui::Text("Mouse position : [%i] [%i]", sf::Mouse::getPosition(*p_window).x, sf::Mouse::getPosition(*p_window).y);
 		if (ImGui::TreeNodeEx("Intersections"))
 		{
+			ImGui::Text("Number of intersection : %i", m_city.intersections.size());
 			for (size_t i = 0; i < m_city.intersections.size(); i++)
 			{
 				ImGui::Text("Position : [%f] [%f]", m_city.intersections[i].getPosition().x, m_city.intersections[i].getPosition().y);
@@ -65,7 +65,7 @@ void Sandbox::handleSettings()
 
 void Sandbox::update(float dt)
 {
-	m_temp = Math::getTemp(m_clTime.getElapsedTime().asSeconds() * 25);
+	m_temp = Math::getTemp(m_clTime.getElapsedTime().asSeconds());
 	if (!ImGui::GetIO().WantCaptureMouse)
 	{
 		camera.move();

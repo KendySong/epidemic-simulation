@@ -28,5 +28,6 @@ public :
 private :
 
 	void generateRoad();
-	bool City::linkExist(const Building& building, Building* target);
+	bool linkExist(const Building& building, Building* target);
+	int intersectionExist(const sf::Vector2f& pos);
 };

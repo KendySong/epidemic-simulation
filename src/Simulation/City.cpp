@@ -119,28 +119,40 @@ void City::generateRoad()
 		for (size_t j = 0; j < roads.size(); j++)
 		{
 			sf::Vector2f intersectionPosition;
+									//Horizontal line								 //Vertical line
 			if (Math::lineIntersect(roads[i][0].position, roads[i][1].position, roads[j][2].position, roads[j][3].position, &intersectionPosition))
 			{
-				sf::RectangleShape rect(sf::Vector2f(2, 2));
-				rect.setPosition(intersectionPosition - sf::Vector2f(1, 1));
-				rect.setFillColor(sf::Color::Blue);
-				intersections.push_back(rect);
+				if (intersectionExist(intersectionPosition) != -1)
+				{
+					//create link between already existing nodes
+					//TODO : LINK START AND END BUILDING WITH FIRST BASE LINE
+				}
+				else
+				{
+					sf::RectangleShape rect(sf::Vector2f(2, 2));
+					rect.setPosition(intersectionPosition - sf::Vector2f(1, 1));
+					rect.setFillColor(sf::Color::Blue);
+					intersections.push_back(rect);
+					
+
+				}			
 			}
 		}
 	}
-
-	//Create graph with nodes
-
 }
 
 bool City::linkExist(const Building& building, Building* target)
 {
 	for (size_t i = 0; i < building.links.size(); i++)
-	{
 		if (building.links[i] == target)
-		{
 			return true;
-		}
-	}
 	return false;
+}
+
+int City::intersectionExist(const sf::Vector2f& pos)
+{
+	for (size_t i = 0; i < intersections.size(); i++)
+		if (pos == intersections[i].getPosition() + sf::Vector2f(1, 1))
+			return i;
+	return -1;
 }
