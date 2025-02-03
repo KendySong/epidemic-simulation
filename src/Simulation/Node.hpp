@@ -3,21 +3,14 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Building.hpp"
-
 class Node
 {
 public :
-	Node(sf::Vector2f position, Building* building = nullptr);
+	Node() = default;
+	Node(sf::Vector2f position);
 	
 	std::vector<Node*> nodes;
-
-
 	sf::Vector2f position;
-	Building* building;
-
 
 private :
-
-
 };

@@ -1,7 +1,6 @@
 #include "Node.hpp"
 
-Node::Node(sf::Vector2f position, Building* building)
+Node::Node(sf::Vector2f position)
 {
 	this->position = position;
-	this->building = building;
 }

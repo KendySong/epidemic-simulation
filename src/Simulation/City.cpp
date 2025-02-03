@@ -122,7 +122,7 @@ void City::generateRoad()
 									//Horizontal line								 //Vertical line
 			if (Math::lineIntersect(roads[i][0].position, roads[i][1].position, roads[j][2].position, roads[j][3].position, &intersectionPosition))
 			{
-				if (intersectionExist(intersectionPosition) != -1)
+				if (intersectionExist(intersectionPosition) != -1) //no intersection for avoid add same points into list of intersection
 				{
 					//create link between already existing nodes
 					//TODO : LINK START AND END BUILDING WITH FIRST BASE LINE
@@ -133,7 +133,7 @@ void City::generateRoad()
 					rect.setPosition(intersectionPosition - sf::Vector2f(1, 1));
 					rect.setFillColor(sf::Color::Blue);
 					intersections.push_back(rect);
-					
+				
 
 				}			
 			}
