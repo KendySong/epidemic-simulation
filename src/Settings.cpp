@@ -20,7 +20,7 @@ float Settings::zoom = 1;
 
 //City
 const float         Settings::home_size = 5;
-const sf::Vector2f  Settings::city_size = sf::Vector2f(3, 2);
+const sf::Vector2f  Settings::city_size = sf::Vector2f(17, 9); //x and y component must be odd
 
 //Context
 float Settings::tempMin = -5;

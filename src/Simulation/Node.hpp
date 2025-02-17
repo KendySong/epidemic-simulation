@@ -8,9 +8,11 @@ class Node
 public :
 	Node() = default;
 	Node(sf::Vector2f position);
-	
-	std::vector<Node*> nodes;
+	static void createLink(Node* a, Node* b);
+
+	std::vector<Node*> links;
 	sf::Vector2f position;
 
 private :
+
 };

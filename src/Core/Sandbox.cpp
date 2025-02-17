@@ -15,32 +15,31 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 
 void Sandbox::handleSettings()
 {
-	static std::vector<float> tempRecords;
-	tempRecords.push_back(m_temp);
-	if (tempRecords.size() > 9999)
+	if (ImGui::TreeNodeEx("Simulation Data"))
 	{
-		tempRecords.erase(tempRecords.begin());
+		static std::vector<float> tempRecords;
+		tempRecords.push_back(m_temp);
+		if (tempRecords.size() > 9999)
+		{
+			tempRecords.erase(tempRecords.begin());
+		}
+
+		ImGui::Text("Elapsed Time : %f", m_clTime.getElapsedTime().asSeconds());
+		ImGui::Text("Temp in C : %f", m_temp);
+		ImGui::PlotHistogram("",
+			tempRecords.data(),
+			static_cast<int>(tempRecords.size()),
+			0,
+			"Temp in C",
+			Settings::tempMin * 1.25,
+			Settings::tempMax * 1.25,
+			ImVec2(350, 150));
+		ImGui::TreePop();
 	}
-
-
-
-	ImGui::Text("Elapsed Time : %f", m_clTime.getElapsedTime().asSeconds());
-	ImGui::Text("Temp in C : %f", m_temp);
-
-
-	ImGui::PlotHistogram("",
-		tempRecords.data(),
-		static_cast<int>(tempRecords.size()),
-		0,
-		"Temp in C",
-		Settings::tempMin * 1.25,
-		Settings::tempMax * 1.25,
-		ImVec2(350, 150));
-
-	if (ImGui::TreeNodeEx("Miscellaneous [Debug]", ImGuiTreeNodeFlags_DefaultOpen))
-	{
-		ImGui::Checkbox("Draw Grid", &m_drawGrid);	
+	if (ImGui::TreeNodeEx("Miscellaneous [Debug]"))
+	{	
 		ImGui::Text("Mouse position : [%i] [%i]", sf::Mouse::getPosition(*p_window).x, sf::Mouse::getPosition(*p_window).y);
+		ImGui::Checkbox("Draw Grid", &m_drawGrid);
 		if (ImGui::TreeNodeEx("Intersections"))
 		{
 			ImGui::Text("Number of intersection : %i", m_city.intersections.size());
@@ -50,15 +49,19 @@ void Sandbox::handleSettings()
 			}
 			ImGui::TreePop();
 		}
+		if (ImGui::TreeNodeEx("Roads"))
+		{
+			ImGui::Text("Number of roads : %i", m_city.roads.size());
+			for (size_t i = 0; i < m_drawStateRoad.size(); i++)
+			{
+				std::string lblRoad = "Road [" + std::to_string(i) + "]";
+				bool currentDraw = m_drawStateRoad[i];
+				ImGui::Checkbox(lblRoad.c_str(), &currentDraw);
+				m_drawStateRoad[i] = currentDraw;
+			}
 
-		ImGui::Text("Number of roads : %i", m_city.roads.size());
-		for (size_t i = 0; i < m_drawStateRoad.size(); i++)
-		{			
-			std::string lblRoad = "Road [" + std::to_string(i) + "]";
-			bool currentDraw = m_drawStateRoad[i];
-			ImGui::Checkbox(lblRoad.c_str(), &currentDraw);
-			m_drawStateRoad[i] = currentDraw;
-		}
+			ImGui::TreePop();
+		}	
 		ImGui::TreePop();
 	}
 }
@@ -89,7 +92,7 @@ void Sandbox::render()
 	{
 		if (m_drawStateRoad[i])
 		{
-			p_window->draw(m_city.roads[i]);
+			p_window->draw(m_city.roads[i].lines);
 		}	
 	}
 

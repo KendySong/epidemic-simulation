@@ -4,6 +4,7 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Road.hpp"
 #include "Human.hpp"
 #include "Building.hpp"
 
@@ -14,18 +15,13 @@ public :
 
 	std::vector<Human> humans;
 	std::vector<Building> building;
-	std::vector<sf::VertexArray> roads;
+	std::vector<Road> roads;
+	
 	sf::VertexArray gridLines;
-
 	std::vector<sf::RectangleShape> intersections;
 
-	/*
-	sf::Sprite s;
-	sf::Texture t;
-	sf::Image img;
-	*/
-
 private :
+	std::vector<Node> m_nodes;
 
 	void generateRoad();
 	bool linkExist(const Building& building, Building* target);

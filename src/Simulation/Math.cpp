@@ -40,7 +40,12 @@ sf::Vector2f Math::random(float xMin, float xMax, float yMin, float yMax)
 
 int Math::random(int min, int max)
 {
-	return (max - min) * (static_cast<float>(rand()) / static_cast<float>(RAND_MAX)) + min;
+	return (max - min) * ((float)(rand()) / (float)(RAND_MAX)) + min;
+}
+
+float Math::random(float min, float max)
+{
+	return (max - min) * ((float)rand() / (float)RAND_MAX) + min;
 }
 
 sf::Vector2f Math::lerp(sf::Vector2f a, sf::Vector2f b, float t)
@@ -52,8 +57,6 @@ float Math::dot(sf::Vector2f a, sf::Vector2f b)
 {
 	return a.x * b.x + a.y * b.y;
 }
-
-
 
 bool Math::lineIntersect(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c, sf::Vector2f d, sf::Vector2f* o)
 {
@@ -71,19 +74,22 @@ bool Math::lineIntersect(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c, sf::Vec
 	float t1 =  (cd.y  * ac.x - cd.x * ac.y) / det;
 	float t2 = -(-ab.y * ac.x + ab.x * ac.y) / det;
 	
-	/*
+	
 	if (Math::distance(a + ab * t1, c + cd * t2) < 0.001f && (t1 <= 1 && t1 >= 0 && t2 <= 1 && t2 >= 0))
+	{
+		*o = a + ab * t1;
+		return true;
+	}
+	
+
+	/*
+	if (a + ab * t1 == c + cd * t2 && (t1 <= 1 && t1 >= 0 && t2 <= 1 && t2 >= 0))
 	{
 		*o = a + ab * t1;
 		return true;
 	}
 	*/
 
-	if (a + ab * t1 == c + cd * t2 && (t1 <= 1 && t1 >= 0 && t2 <= 1 && t2 >= 0))
-	{
-		*o = a + ab * t1;
-		return true;
-	}
 	return false;
 }
 

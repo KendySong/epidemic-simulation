@@ -37,104 +37,90 @@ City::City()
 		}
 	}
 
-	//Generate voronoi
-	/*
-	img.create(Settings::screen_size.x, Settings::screen_size.y);
-	for (int y = 0; y < Settings::screen_size.y; y++)
-	{
-		for (int x = 0; x < Settings::screen_size.x; x++)
-		{
-			sf::Vector2i index(x / caseSize.x, y / caseSize.y);
-			float neareast = std::numeric_limits<float>::max();
-			sf::Vector2i targetIndex;
-			
-			for (int v = -1; v < 2; v++)
-			{
-				for (int h = -1; h < 2; h++)
-				{
-					sf::Vector2i nIndex = index + sf::Vector2i(h, v);
-					if (nIndex.x < 0 || nIndex.y < 0 || nIndex.x >= Settings::city_size.x || nIndex.y >= Settings::city_size.y)
-					{
-						continue;
-					}
-
-					float distance = Math::distance(building[nIndex.y * Settings::city_size.x + nIndex.x].position, sf::Vector2f(x, y));
-					if (neareast > distance)
-					{
-						neareast = distance;
-						targetIndex = nIndex;
-					}
-				}
-			}		
-
-			img.setPixel(x, y, building[targetIndex.y * Settings::city_size.y + targetIndex.x].color);		
-		}
-	}
-	t.loadFromImage(img);
-	s.setTexture(t);
-	*/
-
 	generateRoad();
 }
 
 void City::generateRoad()
 {
+	m_nodes.reserve(pow(Settings::city_size.x * Settings::city_size.y, 2));
+
 	//Generate road lines
 	for (int y = 0; y < Settings::city_size.y; y += 2)
 	{
 		for (int x = 0; x < Settings::city_size.x; x += 2)
 		{
 			int index = y * Settings::city_size.x + x;
-
 			for (int v = -1; v < 2; v++)
 			{
 				for (int h = -1; h < 2; h++)
-				{
+				{		
 					int nIndex = (y + v) * Settings::city_size.x + x + h;
-					if (nIndex < 0 || nIndex >= building.size() || (v == 0 && h == 0) || linkExist(building[index], &building[nIndex]))
+					if (h == v || (h == -1 && x == 0) || (h == 1 && x == Settings::city_size.x-1) || nIndex < 0 || nIndex >= building.size() || linkExist(building[index], &building[nIndex]))
 					{
 						continue;
 					}
 
 					sf::Vector2f dir = building[nIndex].position - building[index].position;
 
-					sf::VertexArray roadLine(sf::PrimitiveType::Lines);
-					roadLine.append(sf::Vertex(building[index].position, sf::Color::Red));
-					roadLine.append(sf::Vertex(building[index].position + sf::Vector2f(dir.x, 0), sf::Color::Red));
-
-					roadLine.append(sf::Vertex(building[index].position + sf::Vector2f(dir.x, 0), sf::Color::Red));
-					roadLine.append(sf::Vertex(building[index].position + dir, sf::Color::Red));
+					Road road(&building[index], &building[nIndex]);
+					road.lines = sf::VertexArray(sf::PrimitiveType::Lines);
+					road.lines.append(sf::Vertex(building[index].position, sf::Color::Red));
+					road.lines.append(sf::Vertex(building[index].position + dir, sf::Color::Red));
 
 					building[index].links.push_back(&building[nIndex]);
 					building[nIndex].links.push_back(&building[index]);
-					roads.push_back(roadLine);
+					roads.push_back(road);
 				}
 			}
 		}
 	}
 
-	//Compute inter road intersection
+	//Compute inter road intersection and generate graph
 	for (size_t i = 0; i < roads.size(); i++)
 	{
 		for (size_t j = 0; j < roads.size(); j++)
 		{
+			if (i == j) continue;
 			sf::Vector2f intersectionPosition;
-									//Horizontal line								 //Vertical line
-			if (Math::lineIntersect(roads[i][0].position, roads[i][1].position, roads[j][2].position, roads[j][3].position, &intersectionPosition))
+			if (Math::lineIntersect(roads[i].lines[0].position, roads[i].lines[1].position, roads[j].lines[0].position, roads[j].lines[1].position, &intersectionPosition))
 			{
-				if (intersectionExist(intersectionPosition) != -1) //no intersection for avoid add same points into list of intersection
+				bool onBuilding = false;
+				for (size_t i = 0; i < building.size(); i++)
 				{
-					//create link between already existing nodes
-					//TODO : LINK START AND END BUILDING WITH FIRST BASE LINE
+					if (Math::distance(intersectionPosition, building[i].position) <= 0.001)
+					{
+						onBuilding = true;
+						break;
+					}
 				}
-				else
+
+				//Check if the intersection not exist
+				if (intersectionExist(intersectionPosition) == -1 && !onBuilding)
 				{
-					sf::RectangleShape rect(sf::Vector2f(2, 2));
+					//Create blue rect for display intersection
+					sf::RectangleShape rect(sf::Vector2f(5, 5));
 					rect.setPosition(intersectionPosition - sf::Vector2f(1, 1));
 					rect.setFillColor(sf::Color::Blue);
 					intersections.push_back(rect);
-				
 
+					m_nodes.emplace_back();
+					Node* intersection = &m_nodes[m_nodes.size() - 1];
+					intersection->position = intersectionPosition;
+					Node::createLink(intersection, &roads[i].a->node);
+					Node::createLink(intersection, &roads[i].b->node);
+					Node::createLink(intersection, &roads[j].a->node);
+					Node::createLink(intersection, &roads[j].b->node);
+					
+					for (size_t k = 0; k < roads[i].intersections.size(); k++)
+							Node::createLink(intersection, roads[i].intersections[k]);
+					for (size_t k = 0; k < roads[j].intersections.size(); k++)
+							Node::createLink(intersection, roads[j].intersections[k]);		
+					roads[i].intersections.push_back(intersection);
+					roads[j].intersections.push_back(intersection);
+				}
+				else
+				{
+					std::cout << "s\n";					
 				}			
 			}
 		}
