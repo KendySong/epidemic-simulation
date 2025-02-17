@@ -3,5 +3,5 @@ enum class Type
 {
     House,
     Work,
-    Entertaiment
+    Entertainment
 };
