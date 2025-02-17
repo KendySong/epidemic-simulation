@@ -23,6 +23,9 @@ City::City()
 			building.push_back(build);
 			m_nodes[m_nodes.size() - 1].building = &building[building.size() - 1];
 			m_nodes[m_nodes.size() - 1].position = build.position;
+
+			building[building.size() - 1].texture.loadFromFile("../assets/home.png");
+			building[building.size() - 1].setTexture();
 		}
 	}
 

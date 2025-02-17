@@ -1,6 +1,7 @@
 #include "Math.hpp"
 #include "../Settings.hpp"
 #include "Building.hpp"
+#include <iostream>
 
 Building::Building(sf::Vector2f position)
 {
@@ -12,4 +13,9 @@ Building::Building(sf::Vector2f position)
 	rect.setPosition(position - homeSize*0.5f);
 	rect.setFillColor(sf::Color::White);
 	color = sf::Color(Math::random(0, 255), Math::random(0, 255), Math::random(0, 255));
+}
+
+void Building::setTexture()
+{
+	rect.setTexture(&this->texture);
 }

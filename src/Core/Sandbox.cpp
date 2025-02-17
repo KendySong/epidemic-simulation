@@ -9,8 +9,13 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 	p_window = window;
 	camera = Camera(window);
 	m_drawGrid = false;
+	m_displayMarker = false;
+	m_displayIntersection = false;
 
 	m_drawStateRoad = std::vector<bool>(m_city.roads.size(), true);
+	m_terrain = sf::RectangleShape(Settings::screen_size * 1.25f);
+	m_terrain.setFillColor(sf::Color(60, 60, 60));
+	m_terrain.setPosition(m_terrain.getPosition() - (m_terrain.getSize() - Settings::screen_size) /2.0f);
 
 	//Debug
 	m_currentNode = m_city.building[0].node;
@@ -44,9 +49,10 @@ void Sandbox::handleSettings()
 	if (ImGui::TreeNodeEx("Miscellaneous [Debug]"))
 	{	
 		ImGui::Text("Mouse position : [%i] [%i]", sf::Mouse::getPosition(*p_window).x, sf::Mouse::getPosition(*p_window).y);
-		ImGui::Checkbox("Draw Grid", &m_drawGrid);
+		ImGui::Checkbox("Draw grid", &m_drawGrid);	
 		if (ImGui::TreeNodeEx("Intersections"))
 		{
+			ImGui::Checkbox("Display intersections", &m_displayIntersection);
 			ImGui::Text("Number of intersection : %i", m_city.intersections.size());
 			for (size_t i = 0; i < m_city.intersections.size(); i++)
 			{
@@ -106,14 +112,11 @@ void Sandbox::update(float dt)
 void Sandbox::render()
 {
 	p_window->setView(camera.view);
+	p_window->draw(m_terrain);
+
 	if (m_drawGrid)
 	{
 		p_window->draw(m_city.gridLines);
-	}
-
-	for (size_t i = 0; i < m_city.building.size(); i++)
-	{
-		p_window->draw(m_city.building[i].rect);
 	}
 
 	for (size_t i = 0; i < m_city.roads.size(); i++)
@@ -124,11 +127,19 @@ void Sandbox::render()
 		}	
 	}
 
-	for (size_t i = 0; i < m_city.intersections.size(); i++)
+	for (size_t i = 0; i < m_city.building.size(); i++)
 	{
-		p_window->draw(m_city.intersections[i]);
+		p_window->draw(m_city.building[i].rect);
 	}
 
+	if (m_displayIntersection)
+	{
+		for (size_t i = 0; i < m_city.intersections.size(); i++)
+		{
+			p_window->draw(m_city.intersections[i]);
+		}
+	}
+	
 	if (m_displayMarker)
 	{
 		p_window->draw(m_currentNodeMarker);

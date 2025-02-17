@@ -29,12 +29,14 @@ private :
 	City m_city;
 	sf::Clock m_clTime;
 	float m_temp;
+	sf::RectangleShape m_terrain;
 
 	//Gui
 	bool m_drawGrid;
 	std::vector<bool> m_drawStateRoad;
 
 	//Debug
+	bool m_displayIntersection;
 	bool m_displayMarker;
 	Node* m_currentNode;
 	sf::CircleShape m_currentNodeMarker;
