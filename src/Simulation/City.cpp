@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "City.hpp"
 #include "Math.hpp"
 #include "Node.hpp"
@@ -9,16 +7,22 @@ City::City()
 {
 	sf::Vector2f caseSize = Settings::screen_size / Settings::city_size;
 	building.reserve(Settings::city_size.x * Settings::city_size.y);
+	m_nodes.reserve(pow(Settings::city_size.x * Settings::city_size.y, 2));
 
 	//Generate uniform points
 	for (size_t y = 0; y < Settings::city_size.y; y++)
 	{
 		for (size_t x = 0; x < Settings::city_size.x; x++)
 		{
-			building.push_back(Building(Math::random(
-			x * caseSize.x, (x + 1) * caseSize.x,
-			y * caseSize.y, (y + 1) * caseSize.y
-			)));
+			m_nodes.emplace_back();
+			Building build = Building(Math::random(
+				x * caseSize.x, (x + 1) * caseSize.x,
+				y * caseSize.y, (y + 1) * caseSize.y
+			));
+			build.node = &m_nodes[m_nodes.size() - 1];
+			building.push_back(build);
+			m_nodes[m_nodes.size() - 1].building = &building[building.size() - 1];
+			m_nodes[m_nodes.size() - 1].position = build.position;
 		}
 	}
 
@@ -42,8 +46,6 @@ City::City()
 
 void City::generateRoad()
 {
-	m_nodes.reserve(pow(Settings::city_size.x * Settings::city_size.y, 2));
-
 	//Generate road lines
 	for (int y = 0; y < Settings::city_size.y; y += 2)
 	{
@@ -70,6 +72,8 @@ void City::generateRoad()
 					building[index].links.push_back(&building[nIndex]);
 					building[nIndex].links.push_back(&building[index]);
 					roads.push_back(road);
+
+					Node::createLink(building[index].node, building[nIndex].node);
 				}
 			}
 		}
@@ -106,10 +110,10 @@ void City::generateRoad()
 					m_nodes.emplace_back();
 					Node* intersection = &m_nodes[m_nodes.size() - 1];
 					intersection->position = intersectionPosition;
-					Node::createLink(intersection, &roads[i].a->node);
-					Node::createLink(intersection, &roads[i].b->node);
-					Node::createLink(intersection, &roads[j].a->node);
-					Node::createLink(intersection, &roads[j].b->node);
+					Node::createLink(intersection, roads[i].a->node);
+					Node::createLink(intersection, roads[i].b->node);
+					Node::createLink(intersection, roads[j].a->node);
+					Node::createLink(intersection, roads[j].b->node);
 					
 					for (size_t k = 0; k < roads[i].intersections.size(); k++)
 							Node::createLink(intersection, roads[i].intersections[k]);
@@ -120,7 +124,7 @@ void City::generateRoad()
 				}
 				else
 				{
-					std::cout << "s\n";					
+					//Already have an intersection				
 				}			
 			}
 		}

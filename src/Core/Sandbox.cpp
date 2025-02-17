@@ -11,6 +11,11 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 	m_drawGrid = false;
 
 	m_drawStateRoad = std::vector<bool>(m_city.roads.size(), true);
+
+	//Debug
+	m_currentNode = m_city.building[0].node;
+	m_currentNodeMarker = sf::CircleShape(10);
+	m_currentNodeMarker.setFillColor(sf::Color::Green);
 }
 
 void Sandbox::handleSettings()
@@ -49,21 +54,39 @@ void Sandbox::handleSettings()
 			}
 			ImGui::TreePop();
 		}
-		if (ImGui::TreeNodeEx("Roads"))
+		if (ImGui::TreeNodeEx("Graph"))
 		{
-			ImGui::Text("Number of roads : %i", m_city.roads.size());
-			for (size_t i = 0; i < m_drawStateRoad.size(); i++)
+			ImGui::Checkbox("Display marker", &m_displayMarker);
+
+			static int currentI = 0;
+			std::string currentS = "[" + std::to_string(m_currentNode->position.x) + "] [" + std::to_string(m_currentNode->position.y) + "]";
+			const char* previewValue = "";
+			ImGui::Text("Current node : [%f][%f]", m_currentNode->position.x, m_currentNode->position.y);
+			if (ImGui::BeginCombo(" ", currentS.c_str()))
 			{
-				std::string lblRoad = "Road [" + std::to_string(i) + "]";
-				bool currentDraw = m_drawStateRoad[i];
-				ImGui::Checkbox(lblRoad.c_str(), &currentDraw);
-				m_drawStateRoad[i] = currentDraw;
+				for (int i = 0; i < m_currentNode->links.size(); i++)
+				{
+					bool selected = (currentI == i);
+					std::string itemS = "[" + std::to_string(m_currentNode->links[i]->position.x) + "] [" + std::to_string(m_currentNode->links[i]->position.y) + "]";
+					if (ImGui::Selectable(itemS.c_str(), selected))
+					{
+						currentI = i;
+						m_currentNode = m_currentNode->links[i];
+					}
+
+					if (selected)
+					{
+						ImGui::SetItemDefaultFocus();
+					}
+				}
+				ImGui::EndCombo();
 			}
 
 			ImGui::TreePop();
-		}	
+		}
 		ImGui::TreePop();
 	}
+
 }
 
 void Sandbox::update(float dt)
@@ -73,6 +96,11 @@ void Sandbox::update(float dt)
 	{
 		camera.move();
 	}
+
+	if (m_displayMarker)
+	{
+		m_currentNodeMarker.setPosition(m_currentNode->position);
+	}	
 }
 
 void Sandbox::render()
@@ -99,5 +127,10 @@ void Sandbox::render()
 	for (size_t i = 0; i < m_city.intersections.size(); i++)
 	{
 		p_window->draw(m_city.intersections[i]);
+	}
+
+	if (m_displayMarker)
+	{
+		p_window->draw(m_currentNodeMarker);
 	}
 }

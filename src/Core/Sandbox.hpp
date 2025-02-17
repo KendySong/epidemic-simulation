@@ -34,4 +34,8 @@ private :
 	bool m_drawGrid;
 	std::vector<bool> m_drawStateRoad;
 
+	//Debug
+	bool m_displayMarker;
+	Node* m_currentNode;
+	sf::CircleShape m_currentNodeMarker;
 };

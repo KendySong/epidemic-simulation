@@ -11,7 +11,7 @@ public :
 	Building() = default;
 	Building(sf::Vector2f position);
 
-	Node node;
+	Node* node;
 	sf::Vector2f position;
 	sf::RectangleShape rect;
 	sf::Color color;
