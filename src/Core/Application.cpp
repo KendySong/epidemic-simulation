@@ -61,8 +61,11 @@ int Application::run()
         p_window->clear(Settings::clear_color);
         p_sandbox->render();
 
-        ImGui::Begin("Settings");
+        ImGui::BeginMainMenuBar();
             ImGui::Text("FPS : %i", m_fpsDisplay);
+        ImGui::EndMainMenuBar();
+
+        ImGui::Begin("Settings");    
             p_sandbox->handleSettings();
         ImGui::End();
 

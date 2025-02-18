@@ -1,6 +1,8 @@
 #include "Math.hpp"
 #include "../Settings.hpp"
 #include "Building.hpp"
+#include "../Core/Texture.hpp"
+
 #include <iostream>
 
 Building::Building(sf::Vector2f position)
@@ -15,7 +17,20 @@ Building::Building(sf::Vector2f position)
 	color = sf::Color(Math::random(0, 255), Math::random(0, 255), Math::random(0, 255));
 }
 
-void Building::setTexture()
+void Building::setType(Type type)
 {
-	rect.setTexture(&this->texture);
+	this->type = type;
+	switch (type)
+	{
+	case Type::Home:
+		rect.setTexture(Texture::instance()->home);
+		break;
+	case Type::Entertainment:
+		rect.setTexture(Texture::instance()->entertainment);
+		break;
+	case Type::Work:
+		rect.setTexture(Texture::instance()->work);
+		break;
+	}
+	
 }

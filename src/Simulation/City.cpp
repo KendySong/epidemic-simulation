@@ -3,48 +3,78 @@
 #include "Node.hpp"
 #include "../Settings.hpp"
 
+#include <iostream>
+
 City::City()
 {
-	sf::Vector2f caseSize = Settings::screen_size / Settings::city_size;
+	m_caseSize = Settings::screen_size / Settings::city_size;
 	building.reserve(Settings::city_size.x * Settings::city_size.y);
 	m_nodes.reserve(pow(Settings::city_size.x * Settings::city_size.y, 2));
 
-	//Generate uniform points
+	//Generate uniform building emplacements
 	for (size_t y = 0; y < Settings::city_size.y; y++)
 	{
 		for (size_t x = 0; x < Settings::city_size.x; x++)
 		{
 			m_nodes.emplace_back();
 			Building build = Building(Math::random(
-				x * caseSize.x, (x + 1) * caseSize.x,
-				y * caseSize.y, (y + 1) * caseSize.y
+				x * m_caseSize.x, (x + 1) * m_caseSize.x,
+				y * m_caseSize.y, (y + 1) * m_caseSize.y
 			));
 			build.node = &m_nodes[m_nodes.size() - 1];
 			building.push_back(build);
 			m_nodes[m_nodes.size() - 1].building = &building[building.size() - 1];
 			m_nodes[m_nodes.size() - 1].position = build.position;
 
-			building[building.size() - 1].texture.loadFromFile("../assets/entertainment.png");
-			building[building.size() - 1].setTexture();
+			building[building.size() - 1].setType(Type::Undefined);
 		}
 	}
 
-	gridLines = sf::VertexArray(sf::PrimitiveType::Lines);	
+	generateGrid();
+	generateRoad();
+
+	//Generate buildings type and init
+	homeRepartition = Settings::home_repartition * building.size();
+	workRepartition = Settings::work_repartition * building.size();
+	entertainmentRepartition = Settings::home_repartition * building.size();
+	entertainmentRepartition += (building.size() - homeRepartition - workRepartition - entertainmentRepartition);
+
+	setBuildType(Type::Home, homeRepartition);
+	setBuildType(Type::Work, workRepartition);
+	setBuildType(Type::Entertainment, entertainmentRepartition);
+}
+
+void City::setBuildType(Type type, int quantity)
+{
+	while (quantity > 0)
+	{
+		Building* center = &building[Math::random(0, building.size() - 1)];
+		if (center->type == Type::Undefined)
+		{
+			center->setType(type);
+			quantity--;
+		}	
+	}
+}
+
+void City::generateGrid()
+{
+	//Generate grid
+	gridLines = sf::VertexArray(sf::PrimitiveType::Lines);
 	for (size_t y = 0; y < Settings::city_size.y + 1; y++)
 	{
 		for (size_t x = 0; x < Settings::city_size.x + 1; x++)
 		{
 			//Horizontal line
-			gridLines.append(sf::Vertex(sf::Vector2f(0, y * caseSize.y)));
-			gridLines.append(sf::Vertex(sf::Vector2f(Settings::screen_size.x, y * caseSize.y)));
-			
+			gridLines.append(sf::Vertex(sf::Vector2f(0, y * m_caseSize.y)));
+			gridLines.append(sf::Vertex(sf::Vector2f(Settings::screen_size.x, y * m_caseSize.y)));
+
 			//Vertical line
-			gridLines.append(sf::Vertex(sf::Vector2f(x * caseSize.x, 0)));
-			gridLines.append(sf::Vertex(sf::Vector2f(x * caseSize.x, Settings::screen_size.y)));
+			gridLines.append(sf::Vertex(sf::Vector2f(x * m_caseSize.x, 0)));
+			gridLines.append(sf::Vertex(sf::Vector2f(x * m_caseSize.x, Settings::screen_size.y)));
 		}
 	}
 
-	generateRoad();
 }
 
 void City::generateRoad()
@@ -124,11 +154,7 @@ void City::generateRoad()
 							Node::createLink(intersection, roads[j].intersections[k]);		
 					roads[i].intersections.push_back(intersection);
 					roads[j].intersections.push_back(intersection);
-				}
-				else
-				{
-					//Already have an intersection				
-				}			
+				}		
 			}
 		}
 	}

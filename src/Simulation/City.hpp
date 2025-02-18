@@ -13,16 +13,25 @@ class City
 public :
 	City();
 
-	std::vector<Human> humans;
 	std::vector<Building> building;
+	std::vector<Human> humans;
 	std::vector<Road> roads;
-	
+
+	//Debug
 	sf::VertexArray gridLines;
 	std::vector<sf::RectangleShape> intersections;
 
+	//Info
+	int homeRepartition;
+	int workRepartition;
+	int entertainmentRepartition;
+
 private :
 	std::vector<Node> m_nodes;
+	sf::Vector2f m_caseSize;
 
+	void setBuildType(Type type, int quantity);
+	void generateGrid();
 	void generateRoad();
 	bool linkExist(const Building& building, Building* target);
 	int intersectionExist(const sf::Vector2f& pos);

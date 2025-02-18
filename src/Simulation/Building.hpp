@@ -4,21 +4,23 @@
 #include <SFML/Graphics.hpp>
 
 #include "Node.hpp"
+#include "Type.hpp"
 
 class Building
 {
 public :
 	Building() = default;
 	Building(sf::Vector2f position);
-	void setTexture();
+	void setType(Type type);
 
-	Node* node;
+	static sf::Texture home;
+
 	sf::Vector2f position;
-	sf::RectangleShape rect;
-	sf::Texture texture;
-	sf::Color color;
-
+	Node* node;
+	Type type;
 	std::vector<Building*> links;
-	
+
+	sf::RectangleShape rect;
+	sf::Color color;
 private :
 };

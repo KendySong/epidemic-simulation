@@ -21,6 +21,9 @@ public :
     //City
     static const float home_size;
     static const sf::Vector2f city_size;
+    static const float home_repartition;
+    static const float work_repartition;
+    static const float entertainment_repartition;
 
     //Context
     static float tempMin;

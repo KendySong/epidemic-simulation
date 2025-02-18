@@ -25,6 +25,13 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 
 void Sandbox::handleSettings()
 {
+	ImGui::TextUnformatted("City information");
+	ImGui::Separator();
+	ImGui::Text("Home : %i", m_city.homeRepartition);
+	ImGui::Text("Work : %i", m_city.workRepartition);
+	ImGui::Text("Entertainment : %i", m_city.entertainmentRepartition);
+
+	ImGui::Separator();
 	if (ImGui::TreeNodeEx("Simulation Data"))
 	{
 		static std::vector<float> tempRecords;
@@ -46,6 +53,8 @@ void Sandbox::handleSettings()
 			ImVec2(350, 150));
 		ImGui::TreePop();
 	}
+
+	ImGui::Separator();
 	if (ImGui::TreeNodeEx("Miscellaneous [Debug]"))
 	{	
 		ImGui::Text("Mouse position : [%i] [%i]", sf::Mouse::getPosition(*p_window).x, sf::Mouse::getPosition(*p_window).y);
@@ -92,7 +101,6 @@ void Sandbox::handleSettings()
 		}
 		ImGui::TreePop();
 	}
-
 }
 
 void Sandbox::update(float dt)
