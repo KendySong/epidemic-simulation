@@ -19,6 +19,7 @@ public :
 	static float dot(sf::Vector2f a, sf::Vector2f b);
 	static bool lineIntersect(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c, sf::Vector2f d, sf::Vector2f* o);
 	static float getTemp(float time);
+	static float getImmunitary(int age);
 };
 
 sf::Vector2f operator+(const sf::Vector2f& a, const sf::Vector2i& b);

@@ -1,17 +1,18 @@
+#include <iostream>
+
 #include "City.hpp"
 #include "Math.hpp"
 #include "Node.hpp"
 #include "../Settings.hpp"
 
-#include <iostream>
-
 City::City()
-{
+{	
+	//Reserve memory
 	m_caseSize = Settings::screen_size / Settings::city_size;
 	building.reserve(Settings::city_size.x * Settings::city_size.y);
 	m_nodes.reserve(pow(Settings::city_size.x * Settings::city_size.y, 2));
 
-	//Generate uniform building emplacements
+	//Generate building emplacements
 	for (size_t y = 0; y < Settings::city_size.y; y++)
 	{
 		for (size_t x = 0; x < Settings::city_size.x; x++)
@@ -30,29 +31,60 @@ City::City()
 		}
 	}
 
+	//Construct the city
 	generateGrid();
 	generateRoad();
-
-	//Generate buildings type and init
+	
+	//Set repartition
 	homeRepartition = Settings::home_repartition * building.size();
 	workRepartition = Settings::work_repartition * building.size();
 	entertainmentRepartition = Settings::home_repartition * building.size();
 	entertainmentRepartition += (building.size() - homeRepartition - workRepartition - entertainmentRepartition);
 
+	//Reserve place for humans and sort building
+	humans.reserve(Settings::human_per_home * homeRepartition);
+	entertainmentPlace.reserve(entertainmentRepartition);
+	workPlace.reserve(workRepartition);
+
+	//Set which type is which building
 	setBuildType(Type::Home, homeRepartition);
 	setBuildType(Type::Work, workRepartition);
 	setBuildType(Type::Entertainment, entertainmentRepartition);
+
+	//Give work to all humans
+	for (size_t i = 0; i < humans.size(); i++)
+	{
+		humans[i].work = workPlace[Math::random(0, workPlace.size()-1)];
+	}
 }
 
 void City::setBuildType(Type type, int quantity)
 {
 	while (quantity > 0)
 	{
-		Building* center = &building[Math::random(0, building.size() - 1)];
-		if (center->type == Type::Undefined)
+		Building* build = &building[Math::random(0, building.size()-1)];
+		if (build->type == Type::Undefined)
 		{
-			center->setType(type);
+			build->setType(type);
 			quantity--;
+
+			switch (type)
+			{
+			case Type::Home:
+				for (size_t i = 0; i < Settings::human_per_home; i++)
+				{
+					humans.emplace_back(build);
+				}
+				break;
+
+			case Type::Work:
+				workPlace.push_back(build);
+				break;
+
+			case Type::Entertainment:
+				entertainmentPlace.push_back(build);
+				break;
+			}
 		}	
 	}
 }
@@ -80,6 +112,7 @@ void City::generateGrid()
 void City::generateRoad()
 {
 	//Generate road lines
+	roadVertices = sf::VertexArray(sf::PrimitiveType::Lines);
 	for (int y = 0; y < Settings::city_size.y; y += 2)
 	{
 		for (int x = 0; x < Settings::city_size.x; x += 2)
@@ -99,6 +132,10 @@ void City::generateRoad()
 
 					Road road(&building[index], &building[nIndex]);
 					road.lines = sf::VertexArray(sf::PrimitiveType::Lines);
+
+					roadVertices.append(sf::Vertex(building[index].position, sf::Color::Red));
+					roadVertices.append(sf::Vertex(building[index].position + dir, sf::Color::Red));
+
 					road.lines.append(sf::Vertex(building[index].position, sf::Color::Red));
 					road.lines.append(sf::Vertex(building[index].position + dir, sf::Color::Red));
 
@@ -137,7 +174,7 @@ void City::generateRoad()
 					//Create blue rect for display intersection
 					sf::RectangleShape rect(sf::Vector2f(5, 5));
 					rect.setPosition(intersectionPosition - sf::Vector2f(1, 1));
-					rect.setFillColor(sf::Color::Blue);
+					rect.setFillColor(sf::Color::Yellow);
 					intersections.push_back(rect);
 
 					m_nodes.emplace_back();

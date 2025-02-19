@@ -14,12 +14,15 @@ public :
 	City();
 
 	std::vector<Building> building;
+	std::vector<Building*> entertainmentPlace;
+	std::vector<Building*> workPlace;
 	std::vector<Human> humans;
 	std::vector<Road> roads;
 
 	//Debug
 	sf::VertexArray gridLines;
 	std::vector<sf::RectangleShape> intersections;
+	sf::VertexArray roadVertices;
 
 	//Info
 	int homeRepartition;

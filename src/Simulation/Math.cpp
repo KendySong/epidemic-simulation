@@ -81,19 +81,15 @@ bool Math::lineIntersect(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c, sf::Vec
 		return true;
 	}
 	
-
-	/*
-	if (a + ab * t1 == c + cd * t2 && (t1 <= 1 && t1 >= 0 && t2 <= 1 && t2 >= 0))
-	{
-		*o = a + ab * t1;
-		return true;
-	}
-	*/
-
 	return false;
 }
 
 float Math::getTemp(float time)
 {
 	return ((sin(M_PI_6 * (time - 3)) + 1) / 2.0f) * (Settings::tempMax - Settings::tempMin) + Settings::tempMin;
+}
+
+float Math::getImmunitary(int age)
+{
+	return 30 * cos((age - 25) / 40);
 }

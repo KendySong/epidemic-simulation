@@ -24,8 +24,10 @@ public :
     static const float home_repartition;
     static const float work_repartition;
     static const float entertainment_repartition;
+    static const std::uint32_t human_per_home;
 
-    //Context
+    //Simulation
+    static float speed;
     static float tempMin;
     static float tempMax;
 

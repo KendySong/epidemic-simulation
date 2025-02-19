@@ -26,10 +26,12 @@ private :
 	sf::Texture m_backgroundTex;
 
 	//Simulation
-	City m_city;
-	sf::Clock m_clTime;
-	float m_temp;
 	sf::RectangleShape m_terrain;
+	float m_time;
+	bool m_pause;
+	City m_city;	
+	float m_temp;
+	
 
 	//Gui
 	bool m_drawGrid;
