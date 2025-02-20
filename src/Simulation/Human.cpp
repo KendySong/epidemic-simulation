@@ -7,15 +7,18 @@
 #include "../Settings.hpp"
 #include "Pathfinding.hpp"
 
-Human::Human(Building* home)
+Human::Human(Building* home, std::vector<Building*>* entertainments)
 {
 	this->home = home;
 	this->current = home;
 	this->position = home->position;
+	speed = Settings::avgHumanSpeed;
 	this->health = Math::random(80, 101);
-	body = sf::CircleShape(5);
+
+	body = sf::CircleShape(10);
 	body.setPointCount(3);
 	body.setFillColor(sf::Color::Green);
+	
 	
 	int hourToSleep = Math::random(22, 24);
 	int hourToWork = Math::random(6, 10);
@@ -29,20 +32,18 @@ Human::Human(Building* home)
 
 	m_isMoving = false;
 	m_indexNode = 1;		//Start from 1 for avoid repeatly going on starting node
+	this->entertainments = entertainments;
 }
 
 void Human::draw(sf::RenderTarget& renderTarget)
 {
+	if (Math::distance(position, current->node->position) <= 10)
+	{
+		return;
+	}
+
 	body.setPosition(position - sf::Vector2f(body.getRadius(), body.getRadius()));
 	renderTarget.draw(body);
-
-	/*
-	if (Math::distance(position, home->node->position) > 0.01 || Math::distance(position, work->node->position) > 0.01)
-	{
-		body.setPosition(position - sf::Vector2f(body.getRadius(), body.getRadius()));
-		renderTarget.draw(body);
-	}
-	*/
 }
 
 Activities Human::findCurrentAction(int hourInDay)
@@ -60,50 +61,50 @@ Activities Human::findCurrentAction(int hourInDay)
 
 void Human::update(int hourInDay, float dt)
 {
-	
 	switch (findCurrentAction(hourInDay))
 	{
 	case Activities::Sleep:
-		
+		moveToTarget(home, dt);
 		break;
 
 	case Activities::Home:
-
+		moveToTarget(home, dt);
 		break;
 
 	case Activities::Work:
-		if (current != work && !m_isMoving)
-		{
-			m_path = Pathfinding::path(current->node, work->node);
-			m_isMoving = true;
-		}
-		
-		if (m_isMoving && m_path.size() > 0)
-		{
-			sf::Vector2f dir = m_path[m_indexNode]->position - position;
-			position += Math::normalize(dir) * dt * 2000.0f * Settings::speed;
-
-			if (Math::distance(m_path[m_indexNode]->position, position) <= 0.001)
-			{
-				m_indexNode++;
-			}
-
-			if (Math::distance(m_path[m_path.size()-1]->position, position) <= 0.01)
-			{
-				m_indexNode = 1;
-				m_path.clear();
-				m_isMoving = false;
-				current = work;
-			}
-		}
-		
-
-		//If not at workplace
-			//Go 
+		moveToTarget(work, dt);
 		break;
 
 	case Activities::Entertainment:
-
+		moveToTarget((*entertainments)[Math::random(0, (*entertainments).size()-1)], dt);
 		break;
+	}
+}
+
+void Human::moveToTarget(Building* target, float dt)
+{
+	if (current != target && !m_isMoving)
+	{
+		m_path = Pathfinding::path(current->node, target->node);
+		m_isMoving = true;
+	}
+
+	if (m_isMoving && m_path.size() > 0)
+	{
+		if (Math::distance(m_path[m_indexNode]->position, position) <= 0.1)
+		{
+			m_indexNode++;
+		}
+
+		if (Math::distance(m_path[m_path.size() - 1]->position, position) <= 0.1)
+		{
+			m_indexNode = 1;
+			m_path.clear();
+			m_isMoving = false;
+			current = target;
+		}
+
+		sf::Vector2f dir = m_path[m_indexNode]->position - position;
+		position += Math::normalize(dir) * dt * 2000.0f * Settings::speed;
 	}
 }

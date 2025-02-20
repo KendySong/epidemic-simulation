@@ -20,6 +20,8 @@ public :
 	Camera camera;
 
 private :
+	void getPopulationSample();
+
 	sf::RenderWindow* p_window;
 
 	sf::Sprite m_background;
@@ -43,4 +45,5 @@ private :
 	Node* m_currentNode;
 	sf::CircleShape m_currentNodeMarker;
 	std::vector<Node*> m_path;
+	std::vector<Human*> m_sample;
 };

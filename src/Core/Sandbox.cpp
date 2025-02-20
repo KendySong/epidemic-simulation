@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <iostream>
+#include <random>
 
 #include "Sandbox.hpp"
 #include "../Settings.hpp"
@@ -25,6 +27,8 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 	m_currentNodeMarker = sf::CircleShape(10);
 	m_currentNodeMarker.setFillColor(sf::Color::Blue);
 	m_pause = false;
+
+	this->getPopulationSample();
 }
 
 void Sandbox::handleSettings()
@@ -38,12 +42,10 @@ void Sandbox::handleSettings()
 
 	if (ImGui::TreeNode("Population info"))
 	{
-		for (size_t i = 0; i < Settings::human_per_home/2; i++)
+		for (size_t i = 0; i < m_sample.size(); i++)
 		{
-			std::string humanLabel = "Human [" + std::to_string(i) + "]";
-
-			ImGui::SetNextItemWidth(200);
-			ImGui::InputFloat2(std::string(humanLabel + " Position").c_str(), &m_city.humans[i].position.x);
+			std::string index = std::to_string(i);
+			std::string humanLabel = "Human [" + index + "] [" + getString(m_sample[i]->findCurrentAction(m_hourInDay)) + "]";
 
 			//Display their schedule life
 			if (ImGui::TreeNode(humanLabel.c_str()))
@@ -55,11 +57,11 @@ void Sandbox::handleSettings()
 
 				ImGui::TreePop();
 			}
-			else
-			{
-				ImGui::SameLine();
-				ImGui::TextUnformatted(getString(m_city.humans[i].findCurrentAction(m_hourInDay)).c_str());
-			}
+
+			ImGui::SetNextItemWidth(200);
+			ImGui::InputFloat2(std::string("Position##" + index).c_str(), &m_sample[i]->position.x, 0, ImGuiInputTextFlags_ReadOnly);
+			ImGui::SetNextItemWidth(200);
+			ImGui::InputFloat(std::string("Speed##" + index).c_str(), &m_sample[i]->speed, 100);
 		}
 
 		ImGui::TreePop();
@@ -222,5 +224,24 @@ void Sandbox::render()
 	if (m_displayMarker)
 	{
 		p_window->draw(m_currentNodeMarker);
+	}
+}
+
+void Sandbox::getPopulationSample()
+{
+	std::vector<int> humansID;
+	std::random_device random;
+	std::mt19937 s(random());
+
+	for (size_t i = 0; i < m_city.humans.size(); i++)
+	{
+		humansID.push_back(i);
+	}
+
+	std::shuffle(humansID.begin(), humansID.end(), s);
+	m_sample.reserve(Settings::human_per_home / 2);
+	for (size_t i = 0; i < Settings::human_per_home / 2; i++)
+	{
+		m_sample.push_back(&m_city.humans[humansID[i]]);
 	}
 }

@@ -32,6 +32,7 @@ public :
     static float tempMax;
 
     static int stayAtHomeProb;
+    static float avgHumanSpeed;
 
 private :
     Settings();

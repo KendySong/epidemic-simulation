@@ -73,7 +73,7 @@ void City::setBuildType(Type type, int quantity)
 			case Type::Home:
 				for (size_t i = 0; i < Settings::human_per_home; i++)
 				{
-					humans.emplace_back(build);
+					humans.emplace_back(build, &entertainmentPlace);
 				}
 				break;
 

@@ -31,3 +31,4 @@ float               Settings::speed   = 1;
 float               Settings::tempMin = -5;
 float               Settings::tempMax = 35;
 int                 Settings::stayAtHomeProb = 3;
+float               Settings::avgHumanSpeed = 1000;
