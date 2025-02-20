@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "Activities.hpp"
+#include "Node.hpp"
 
 class Building;
 class Human
@@ -11,10 +12,13 @@ class Human
 public :
 	Human(Building* home);
 	void draw(sf::RenderTarget& renderTarget);
-	void update(int hourInDay);
+	Activities findCurrentAction(int hourInDay);
+	void update(int hourInDay, float dt);
 
+	std::map<std::pair<int, int>, Activities> lifeSchedule;
 	Building* home;
 	Building* work;
+	Building* current;
 
 	float health;
 	sf::CircleShape body;
@@ -33,5 +37,8 @@ public :
 	int age;
 
 private :
-	std::map<std::pair<int, int>, Activities> m_lifeSchedule;
+	bool m_isMoving;
+	Node* p_targetNode;
+	int m_indexNode;
+	std::vector<Node*> m_path;
 };

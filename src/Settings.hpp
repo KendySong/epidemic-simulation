@@ -31,6 +31,8 @@ public :
     static float tempMin;
     static float tempMax;
 
+    static int stayAtHomeProb;
+
 private :
     Settings();
 };

@@ -15,8 +15,8 @@ const float         Settings::base_zoom = 0.75;
 const sf::Color     Settings::clear_color = sf::Color(38, 38, 38);
 
 //Controls
-float Settings::sensitivity = Settings::base_zoom;
-float Settings::zoom = 1;
+float               Settings::sensitivity = Settings::base_zoom;
+float               Settings::zoom = 1;
 
 //City
 const float         Settings::home_size = 25;
@@ -27,6 +27,7 @@ const float         Settings::entertainment_repartition = 0.10;             //Su
 const std::uint32_t Settings::human_per_home = 20;                          
 
 //Simulation
-float Settings::speed   = 1;
-float Settings::tempMin = -5;
-float Settings::tempMax = 35;
+float               Settings::speed   = 1;
+float               Settings::tempMin = -5;
+float               Settings::tempMax = 35;
+int                 Settings::stayAtHomeProb = 3;

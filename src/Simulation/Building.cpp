@@ -1,9 +1,9 @@
-#include "Math.hpp"
-#include "../Settings.hpp"
-#include "Building.hpp"
-#include "../Core/Texture.hpp"
-
 #include <iostream>
+
+#include "Math.hpp"
+#include "Building.hpp"
+#include "../Settings.hpp"
+#include "../Core/Texture.hpp"
 
 Building::Building(sf::Vector2f position)
 {

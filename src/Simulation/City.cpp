@@ -10,7 +10,7 @@ City::City()
 	//Reserve memory
 	m_caseSize = Settings::screen_size / Settings::city_size;
 	building.reserve(Settings::city_size.x * Settings::city_size.y);
-	m_nodes.reserve(pow(Settings::city_size.x * Settings::city_size.y, 2));
+	m_nodes.reserve(pow(Settings::city_size.x * Settings::city_size.y, 4));
 
 	//Generate building emplacements
 	for (size_t y = 0; y < Settings::city_size.y; y++)
@@ -141,8 +141,8 @@ void City::generateRoad()
 
 					building[index].links.push_back(&building[nIndex]);
 					building[nIndex].links.push_back(&building[index]);
-					roads.push_back(road);
 
+					roads.push_back(road);
 					Node::createLink(building[index].node, building[nIndex].node);
 				}
 			}

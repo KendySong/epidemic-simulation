@@ -3,6 +3,7 @@
 #include "Sandbox.hpp"
 #include "../Settings.hpp"
 #include "../Simulation/Math.hpp"
+#include "../Simulation/Pathfinding.hpp"
 
 Sandbox::Sandbox(sf::RenderWindow* window)
 {
@@ -19,6 +20,7 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 	m_terrain.setPosition(m_terrain.getPosition() - (m_terrain.getSize() - Settings::screen_size) /2.0f);
 
 	//Debug
+	m_path = Pathfinding::path(m_city.building[0].node, m_city.building[m_city.building.size() - 1].node);
 	m_currentNode = m_city.building[0].node;
 	m_currentNodeMarker = sf::CircleShape(10);
 	m_currentNodeMarker.setFillColor(sf::Color::Blue);
@@ -27,17 +29,47 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 
 void Sandbox::handleSettings()
 {
-	ImGui::TextUnformatted("City information");
-	ImGui::Separator();
-	ImGui::Text("Total population : %i", m_city.humans.size());
-	ImGui::Text("Home : %i", m_city.homeRepartition);
-	ImGui::Text("Work : %i", m_city.workRepartition);
-	ImGui::Text("Entertainment : %i", m_city.entertainmentRepartition);
+	ImGui::SeparatorText("City information");
+
+	ImGui::TextColored(ImVec4(0, 1, 0, 1), "Total population :		%i", m_city.humans.size());
+	ImGui::Text("Number of home :		  %i", m_city.homeRepartition);
+	ImGui::Text("Number of work :		  %i", m_city.workRepartition);
+	ImGui::Text("Number of entertainment : %i", m_city.entertainmentRepartition);
+
+	if (ImGui::TreeNode("Population info"))
+	{
+		for (size_t i = 0; i < Settings::human_per_home/2; i++)
+		{
+			std::string humanLabel = "Human [" + std::to_string(i) + "]";
+
+			ImGui::SetNextItemWidth(200);
+			ImGui::InputFloat2(std::string(humanLabel + " Position").c_str(), &m_city.humans[i].position.x);
+
+			//Display their schedule life
+			if (ImGui::TreeNode(humanLabel.c_str()))
+			{
+				for (const auto& item : m_city.humans[i].lifeSchedule)
+				{
+					ImGui::Text("from %ih00 to %ih00 : %s", item.first.first, item.first.second == 24 ? 0 : item.first.second, getString(item.second));
+				}
+
+				ImGui::TreePop();
+			}
+			else
+			{
+				ImGui::SameLine();
+				ImGui::TextUnformatted(getString(m_city.humans[i].findCurrentAction(m_hourInDay)).c_str());
+			}
+		}
+
+		ImGui::TreePop();
+	}
 
 	ImGui::Separator();
 	if (ImGui::TreeNodeEx("Simulation", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::SeparatorText("Miscellaneous");
+			ImGui::TextColored(ImVec4(0, 1, 0, 1), "Hour : %ih00", m_hourInDay);
 			ImGui::SetNextItemWidth(200);
 			ImGui::DragFloat("Simulation speed", &Settings::speed, 0.1, 0.0, 90);
 			ImGui::Checkbox("Pause", &m_pause);
@@ -49,7 +81,7 @@ void Sandbox::handleSettings()
 			ImGui::DragFloat("Min temp", &Settings::tempMin, 0.5);
 
 			ImGui::Dummy(ImVec2(0.0, 10.0));
-			ImGui::Text("Temp in C : %f", m_temp);
+			ImGui::TextColored(ImVec4(0, 1, 0, 1), "Temp in C : %f", m_temp);
 
 			static std::vector<float> tempRecords;
 			if (!m_pause)
@@ -57,7 +89,7 @@ void Sandbox::handleSettings()
 				tempRecords.push_back(m_temp);
 			}
 		
-			if (tempRecords.size() > 9999)
+			if (tempRecords.size() > 5000)
 			{
 				tempRecords.erase(tempRecords.begin());
 			}	
@@ -116,8 +148,18 @@ void Sandbox::handleSettings()
 				ImGui::EndCombo();
 			}
 
+			if (ImGui::TreeNodeEx("Path from first node to last"))
+			{
+				for (size_t i = 0; i < m_path.size(); i++)
+				{
+					ImGui::Text("[%f] [%f]", m_path[i]->position.x, m_path[i]->position.y);
+				}
+				ImGui::TreePop();
+			}	
+
 			ImGui::TreePop();
 		}
+
 		ImGui::TreePop();
 	}
 }
@@ -133,8 +175,9 @@ void Sandbox::update(float dt)
 
 	if (!m_pause)
 	{
-		m_time += dt;
-		m_temp = Math::getTemp(m_time * Settings::speed);
+		m_time += dt * Settings::speed;
+		m_hourInDay = (int)m_time % 24;
+		m_temp = Math::getTemp((m_time / 720) * Settings::speed);
 		if (!ImGui::GetIO().WantCaptureMouse)
 		{
 			camera.move();
@@ -142,12 +185,8 @@ void Sandbox::update(float dt)
 
 		for (size_t i = 0; i < m_city.humans.size(); i++)
 		{
-			m_city.humans[i].update((int)m_time % 24);
+			m_city.humans[i].update(m_hourInDay, dt);
 		}
-	}
-	else
-	{
-		
 	}
 }
 

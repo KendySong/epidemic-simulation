@@ -40,7 +40,10 @@ int Application::run()
                 break;
 
             case sf::Event::MouseWheelMoved:
-                p_sandbox->camera.zoom(m_event);
+                if (!ImGui::GetIO().WantCaptureMouse)
+                {
+                    p_sandbox->camera.zoom(m_event);
+                }             
                 break;
             }
         }

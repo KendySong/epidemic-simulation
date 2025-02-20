@@ -28,11 +28,11 @@ private :
 	//Simulation
 	sf::RectangleShape m_terrain;
 	float m_time;
+	int m_hourInDay;
 	bool m_pause;
 	City m_city;	
 	float m_temp;
 	
-
 	//Gui
 	bool m_drawGrid;
 	std::vector<bool> m_drawStateRoad;
@@ -42,4 +42,5 @@ private :
 	bool m_displayMarker;
 	Node* m_currentNode;
 	sf::CircleShape m_currentNodeMarker;
+	std::vector<Node*> m_path;
 };

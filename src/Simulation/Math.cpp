@@ -26,7 +26,7 @@ float Math::distance(const sf::Vector2f& a, const sf::Vector2f& b)
 	return Math::length(b - a);
 }
 
-sf::Vector2f Math::unit(const sf::Vector2f& a)
+sf::Vector2f Math::normalize(const sf::Vector2f& a)
 {
 	return a / Math::length(a);
 }
