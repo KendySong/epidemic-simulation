@@ -41,6 +41,8 @@ public :
 private :
 	void moveToTarget(Building* target, float dt);
 
+	int m_lastHour;
+
 	bool m_isMoving;
 	Node* p_targetNode;
 	int m_indexNode;

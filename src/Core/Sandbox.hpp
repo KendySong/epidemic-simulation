@@ -34,6 +34,10 @@ private :
 	bool m_pause;
 	City m_city;	
 	float m_temp;
+	int m_day;
+	int m_lastHour;
+	bool m_everyoneWashHand;
+	bool m_everyoneWearMask;
 	
 	//Gui
 	bool m_drawGrid;

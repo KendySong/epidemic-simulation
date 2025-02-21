@@ -27,12 +27,13 @@ public :
     static const std::uint32_t human_per_home;
 
     //Simulation
-    static float speed;
-    static float tempMin;
-    static float tempMax;
+    static const int    start_time;
+    static float        speed;
+    static float        tempMin;
+    static float        tempMax;
 
-    static int stayAtHomeProb;
-    static float avgHumanSpeed;
+    static int          stayAtHomeProb;
+    static float        avgHumanSpeed;
 
 private :
     Settings();

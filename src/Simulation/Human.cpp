@@ -12,13 +12,12 @@ Human::Human(Building* home, std::vector<Building*>* entertainments)
 	this->home = home;
 	this->current = home;
 	this->position = home->position;
-	speed = Settings::avgHumanSpeed;
+	speed = Math::random(Settings::avgHumanSpeed - Settings::avgHumanSpeed/10, Settings::avgHumanSpeed + Settings::avgHumanSpeed/10);
 	this->health = Math::random(80, 101);
 
 	body = sf::CircleShape(5);
 	body.setPointCount(3);
 	body.setFillColor(sf::Color::Green);
-	
 	
 	int hourToSleep = Math::random(22, 24);
 	int hourToWork = Math::random(6, 10);
@@ -33,6 +32,7 @@ Human::Human(Building* home, std::vector<Building*>* entertainments)
 	m_isMoving = false;
 	m_indexNode = 1;		//Start from 1 for avoid repeatly going on starting node
 	this->entertainments = entertainments;
+	m_lastHour = 0;
 }
 
 void Human::draw(sf::RenderTarget& renderTarget)

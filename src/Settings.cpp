@@ -27,6 +27,7 @@ const float         Settings::entertainment_repartition = 0.10;             //Su
 const std::uint32_t Settings::human_per_home = 20;                          
 
 //Simulation
+const int           Settings::start_time = 8;
 float               Settings::speed   = 1;
 float               Settings::tempMin = -5;
 float               Settings::tempMax = 35;

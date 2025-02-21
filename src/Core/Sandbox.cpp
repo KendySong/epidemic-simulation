@@ -11,11 +11,14 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 {
 	p_window = window;
 	camera = Camera(window);
+	m_everyoneWashHand = false;
+	m_everyoneWearMask = false;
 	m_displayIntersection = false;
 	m_displayHeatMap = false;
 	m_displayMarker = false;
 	m_drawGrid = false;
 	m_time = 0;
+	m_day = 0;
 
 	m_drawStateRoad = std::vector<bool>(m_city.roads.size(), true);
 	m_terrain = sf::RectangleShape(Settings::screen_size * 1.25f);
@@ -71,18 +74,22 @@ void Sandbox::handleSettings()
 	ImGui::Separator();
 	if (ImGui::TreeNodeEx("Simulation", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::SeparatorText("Miscellaneous");
+		ImGui::SeparatorText("Time");
 			ImGui::TextColored(ImVec4(0, 1, 0, 1), "Hour : %ih00", m_hourInDay);
+			ImGui::Text("Day : %i", m_day);
 			ImGui::SetNextItemWidth(200);
 			ImGui::DragFloat("Simulation speed", &Settings::speed, 0.1, 0.0, 90);
 			ImGui::Checkbox("Pause", &m_pause);
-			ImGui::Checkbox("Display heatmap", &m_displayHeatMap);
-
 			ImGui::SetNextItemWidth(200);
 			if (ImGui::Button("Slow up simulation"))
 			{
 				Settings::speed = 0.05;
 			}
+
+		ImGui::SeparatorText("Disease");
+			ImGui::Checkbox("Display heatmap", &m_displayHeatMap);
+			ImGui::Checkbox("Everyone wash hand", &m_everyoneWashHand);
+			ImGui::Checkbox("Everyone wear mask", &m_everyoneWearMask);
 			
 		ImGui::SeparatorText("Temp");
 			ImGui::SetNextItemWidth(200);
@@ -186,8 +193,14 @@ void Sandbox::update(float dt)
 	if (!m_pause)
 	{
 		m_time += dt * Settings::speed;
-		m_hourInDay = (int)m_time % 24;
+		m_hourInDay = ((int)m_time + Settings::start_time) % 24;
 		m_temp = Math::getTemp((m_time / 720) * Settings::speed);
+
+		if (m_hourInDay == 0 && m_lastHour != m_hourInDay)
+		{
+			m_day++;
+		}
+
 		if (!ImGui::GetIO().WantCaptureMouse)
 		{
 			camera.move();
@@ -199,6 +212,7 @@ void Sandbox::update(float dt)
 		}
 
 		m_city.updateHeatMap();
+		m_lastHour = m_hourInDay;
 	}
 }
 
