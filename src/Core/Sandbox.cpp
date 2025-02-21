@@ -11,10 +11,10 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 {
 	p_window = window;
 	camera = Camera(window);
-	m_drawGrid = false;
-	m_displayMarker = false;
 	m_displayIntersection = false;
 	m_displayHeatMap = false;
+	m_displayMarker = false;
+	m_drawGrid = false;
 	m_time = 0;
 
 	m_drawStateRoad = std::vector<bool>(m_city.roads.size(), true);
@@ -78,6 +78,12 @@ void Sandbox::handleSettings()
 			ImGui::Checkbox("Pause", &m_pause);
 			ImGui::Checkbox("Display heatmap", &m_displayHeatMap);
 
+			ImGui::SetNextItemWidth(200);
+			if (ImGui::Button("Slow up simulation"))
+			{
+				Settings::speed = 0.05;
+			}
+			
 		ImGui::SeparatorText("Temp");
 			ImGui::SetNextItemWidth(200);
 			ImGui::DragFloat("Max temp", &Settings::tempMax, 0.5);

@@ -105,12 +105,10 @@ void City::updateHeatMap()
 			int index = y * Settings::city_size.x + x;
 			float t = Math::alerp(min, max, heatMap[index]);
 
-
-			sf::Vector3f c = Math::lerp(sf::Vector3f(40, 225, 40), sf::Vector3f(225, 40, 40), t);
-			heatMapColor[index].setFillColor(sf::Color(c.x, c.y, c.z, 150));
+			sf::Vector3f c = Math::lerp(sf::Vector3f(30, 255, 30), sf::Vector3f(255, 30, 30), t);
+			heatMapColor[index].setFillColor(sf::Color(c.x, c.y, c.z, 128));
 		}
 	}
-
 }
 
 void City::setBuildType(Type type, int quantity)
