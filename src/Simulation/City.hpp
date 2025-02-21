@@ -12,12 +12,16 @@ class City
 {
 public :
 	City();
+	void updateHeatMap();
 
 	std::vector<Building> building;
 	std::vector<Building*> entertainmentPlace;
 	std::vector<Building*> workPlace;
 	std::vector<Human> humans;
 	std::vector<Road> roads;
+
+	std::vector<int> heatMap;
+	std::vector<sf::RectangleShape> heatMapColor;
 
 	//Debug
 	sf::VertexArray gridLines;

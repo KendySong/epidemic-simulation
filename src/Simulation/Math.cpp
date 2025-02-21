@@ -6,6 +6,11 @@ sf::Vector2f Math::toVec2f(const sf::Vector2i& a)
 	return { (float)a.x, (float)a.y };
 }
 
+sf::Color operator*(const sf::Color& a, float t)
+{
+	return sf::Color(a.r * t, a.g * t, a.b * t, a.a);
+}
+
 sf::Vector2f operator+(const sf::Vector2f& a, const sf::Vector2i& b)
 {
 	return { a.x + b.x, a.y + b.y };
@@ -82,6 +87,16 @@ bool Math::lineIntersect(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c, sf::Vec
 	}
 	
 	return false;
+}
+
+sf::Vector3f Math::lerp(sf::Vector3f a, sf::Vector3f b, float t)
+{
+	return (b - a) * t + a;
+}
+
+float Math::alerp(float a, float b, float x)
+{
+	return (x - a) / (b - a);
 }
 
 float Math::getTemp(float time)

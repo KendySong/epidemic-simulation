@@ -15,7 +15,7 @@ Human::Human(Building* home, std::vector<Building*>* entertainments)
 	speed = Settings::avgHumanSpeed;
 	this->health = Math::random(80, 101);
 
-	body = sf::CircleShape(10);
+	body = sf::CircleShape(5);
 	body.setPointCount(3);
 	body.setFillColor(sf::Color::Green);
 	

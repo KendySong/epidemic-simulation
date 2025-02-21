@@ -1,3 +1,4 @@
+#include <limits>
 #include <iostream>
 
 #include "City.hpp"
@@ -12,11 +13,20 @@ City::City()
 	building.reserve(Settings::city_size.x * Settings::city_size.y);
 	m_nodes.reserve(pow(Settings::city_size.x * Settings::city_size.y, 4));
 
+	//Generate rect for heatmap
+	heatMap.reserve(building.size());
+	heatMapColor.reserve(building.size());
+
 	//Generate building emplacements
 	for (size_t y = 0; y < Settings::city_size.y; y++)
 	{
 		for (size_t x = 0; x < Settings::city_size.x; x++)
 		{
+			int index = y * Settings::city_size.x + x;
+			heatMapColor.emplace_back(m_caseSize);
+			heatMapColor[index].setPosition(sf::Vector2f(x * m_caseSize.x, y * m_caseSize.y));
+
+
 			m_nodes.emplace_back();
 			Building build = Building(Math::random(
 				x * m_caseSize.x, (x + 1) * m_caseSize.x,
@@ -45,7 +55,7 @@ City::City()
 	humans.reserve(Settings::human_per_home * homeRepartition);
 	entertainmentPlace.reserve(entertainmentRepartition);
 	workPlace.reserve(workRepartition);
-
+	
 	//Set which type is which building
 	setBuildType(Type::Home, homeRepartition);
 	setBuildType(Type::Work, workRepartition);
@@ -56,6 +66,51 @@ City::City()
 	{
 		humans[i].work = workPlace[Math::random(0, workPlace.size()-1)];
 	}
+}
+
+void City::updateHeatMap()
+{
+	heatMap = std::vector<int>(building.size(), 0);
+	for (size_t i = 0; i < humans.size(); i++)
+	{
+		sf::Vector2f caseEmplacement = humans[i].position / m_caseSize;
+		int index = (int)caseEmplacement.y * Settings::city_size.x + (int)caseEmplacement.x;
+		if (index >= 0 && index < building.size())
+		{
+			heatMap[index]++;
+		}
+		
+	}
+
+	//Find min and max values
+	int min = std::numeric_limits<int>::max();
+	int max = std::numeric_limits<int>::min();
+	for (size_t i = 0; i < heatMap.size(); i++)
+	{
+		if (min > heatMap[i])
+		{
+			min = heatMap[i];
+		}
+
+		if (max < heatMap[i])
+		{
+			max = heatMap[i];
+		}
+	}
+
+	for (size_t y = 0; y < Settings::city_size.y; y++)
+	{
+		for (size_t x = 0; x < Settings::city_size.x; x++)
+		{
+			int index = y * Settings::city_size.x + x;
+			float t = Math::alerp(min, max, heatMap[index]);
+
+
+			sf::Vector3f c = Math::lerp(sf::Vector3f(40, 225, 40), sf::Vector3f(225, 40, 40), t);
+			heatMapColor[index].setFillColor(sf::Color(c.x, c.y, c.z, 150));
+		}
+	}
+
 }
 
 void City::setBuildType(Type type, int quantity)

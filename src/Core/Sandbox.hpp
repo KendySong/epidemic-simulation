@@ -40,6 +40,7 @@ private :
 	std::vector<bool> m_drawStateRoad;
 
 	//Debug
+	bool m_displayHeatMap;
 	bool m_displayIntersection;
 	bool m_displayMarker;
 	Node* m_currentNode;

@@ -14,6 +14,7 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 	m_drawGrid = false;
 	m_displayMarker = false;
 	m_displayIntersection = false;
+	m_displayHeatMap = false;
 	m_time = 0;
 
 	m_drawStateRoad = std::vector<bool>(m_city.roads.size(), true);
@@ -75,6 +76,7 @@ void Sandbox::handleSettings()
 			ImGui::SetNextItemWidth(200);
 			ImGui::DragFloat("Simulation speed", &Settings::speed, 0.1, 0.0, 90);
 			ImGui::Checkbox("Pause", &m_pause);
+			ImGui::Checkbox("Display heatmap", &m_displayHeatMap);
 
 		ImGui::SeparatorText("Temp");
 			ImGui::SetNextItemWidth(200);
@@ -189,6 +191,8 @@ void Sandbox::update(float dt)
 		{
 			m_city.humans[i].update(m_hourInDay, dt);
 		}
+
+		m_city.updateHeatMap();
 	}
 }
 
@@ -224,6 +228,14 @@ void Sandbox::render()
 	if (m_displayMarker)
 	{
 		p_window->draw(m_currentNodeMarker);
+	}
+
+	if (m_displayHeatMap)
+	{
+		for (size_t i = 0; i < m_city.heatMapColor.size(); i++)
+		{
+			p_window->draw(m_city.heatMapColor[i]);
+		}
 	}
 }
 

@@ -18,9 +18,12 @@ public :
 	static sf::Vector2f lerp(sf::Vector2f a, sf::Vector2f b, float t);
 	static float dot(sf::Vector2f a, sf::Vector2f b);
 	static bool lineIntersect(sf::Vector2f a, sf::Vector2f b, sf::Vector2f c, sf::Vector2f d, sf::Vector2f* o);
+	static sf::Vector3f lerp(sf::Vector3f a, sf::Vector3f b, float t);
+	static float alerp(float a, float b, float x);
 	static float getTemp(float time);
 	static float getImmunitary(int age);
 };
 
+sf::Color operator*(const sf::Color& a, float t);
 sf::Vector2f operator+(const sf::Vector2f& a, const sf::Vector2i& b);
 sf::Vector2f operator/(const sf::Vector2f& a, const sf::Vector2f& b);
