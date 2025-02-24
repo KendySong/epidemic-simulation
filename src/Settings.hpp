@@ -30,10 +30,19 @@ public :
     static const int    start_time;
     static float        speed;
     static float        tempMin;
+    static float        temp;
     static float        tempMax;
 
     static int          stayAtHomeProb;
     static float        avgHumanSpeed;
+
+    //Dease
+    static float        mortality;
+    static int          nbStartInfectHuman;
+    static float        infectiousness;
+    static bool         everyoneWashHand;
+    static bool         everyoneWearMask;
+    static float        nearDistanceHuman;
 
 private :
     Settings();

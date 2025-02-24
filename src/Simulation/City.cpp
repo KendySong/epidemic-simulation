@@ -66,6 +66,11 @@ City::City()
 	{
 		humans[i].work = workPlace[Math::random(0, workPlace.size()-1)];
 	}
+
+	for (size_t i = 0; i < Settings::nbStartInfectHuman; i++)
+	{
+		humans[i].isInfected = true;
+	}
 }
 
 void City::updateHeatMap()
@@ -75,26 +80,25 @@ void City::updateHeatMap()
 	{
 		sf::Vector2f caseEmplacement = humans[i].position / m_caseSize;
 		int index = (int)caseEmplacement.y * Settings::city_size.x + (int)caseEmplacement.x;
-		if (index >= 0 && index < building.size())
+		if (index >= 0 && index < building.size() && humans[i].isInfected)
 		{
 			heatMap[index]++;
-		}
-		
+		}	
 	}
 
 	//Find min and max values
-	int min = std::numeric_limits<int>::max();
-	int max = std::numeric_limits<int>::min();
+	m_minCasePeople = std::numeric_limits<int>::max();
+	m_maxCasePeople = std::numeric_limits<int>::min();
 	for (size_t i = 0; i < heatMap.size(); i++)
 	{
-		if (min > heatMap[i])
+		if (m_minCasePeople > heatMap[i])
 		{
-			min = heatMap[i];
+			m_minCasePeople = heatMap[i];
 		}
 
-		if (max < heatMap[i])
+		if (m_maxCasePeople < heatMap[i])
 		{
-			max = heatMap[i];
+			m_maxCasePeople = heatMap[i];
 		}
 	}
 
@@ -103,12 +107,23 @@ void City::updateHeatMap()
 		for (size_t x = 0; x < Settings::city_size.x; x++)
 		{
 			int index = y * Settings::city_size.x + x;
-			float t = Math::alerp(min, max, heatMap[index]);
+			float t = m_minCasePeople != 0 && m_maxCasePeople != 0 && heatMap[index] != 0 ? Math::alerp(m_minCasePeople, m_maxCasePeople, heatMap[index]) : 0;
 
 			sf::Vector3f c = Math::lerp(sf::Vector3f(30, 255, 30), sf::Vector3f(255, 30, 30), t);
 			heatMapColor[index].setFillColor(sf::Color(c.x, c.y, c.z, 128));
 		}
 	}
+}
+
+float City::getInfectiousness(sf::Vector2f position)
+{
+	sf::Vector2f caseEmplacement = position / m_caseSize;
+	int index = (int)caseEmplacement.y * Settings::city_size.x + (int)caseEmplacement.x;
+	if (index >= 0 && index < building.size() && heatMap.size() > 0)
+	{
+		float t = Math::alerp(m_minCasePeople, m_maxCasePeople, heatMap[index]);
+	}
+	return 0;
 }
 
 void City::setBuildType(Type type, int quantity)
@@ -126,7 +141,7 @@ void City::setBuildType(Type type, int quantity)
 			case Type::Home:
 				for (size_t i = 0; i < Settings::human_per_home; i++)
 				{
-					humans.emplace_back(build, &entertainmentPlace);
+					humans.emplace_back(build, &entertainmentPlace, this, humans.size());
 				}
 				break;
 
@@ -186,11 +201,11 @@ void City::generateRoad()
 					Road road(&building[index], &building[nIndex]);
 					road.lines = sf::VertexArray(sf::PrimitiveType::Lines);
 
-					roadVertices.append(sf::Vertex(building[index].position, sf::Color::Red));
-					roadVertices.append(sf::Vertex(building[index].position + dir, sf::Color::Red));
+					roadVertices.append(sf::Vertex(building[index].position, sf::Color::White));
+					roadVertices.append(sf::Vertex(building[index].position + dir, sf::Color::White));
 
-					road.lines.append(sf::Vertex(building[index].position, sf::Color::Red));
-					road.lines.append(sf::Vertex(building[index].position + dir, sf::Color::Red));
+					road.lines.append(sf::Vertex(building[index].position, sf::Color::White));
+					road.lines.append(sf::Vertex(building[index].position + dir, sf::Color::White));
 
 					building[index].links.push_back(&building[nIndex]);
 					building[nIndex].links.push_back(&building[index]);

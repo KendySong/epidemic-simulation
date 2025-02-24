@@ -11,8 +11,6 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 {
 	p_window = window;
 	camera = Camera(window);
-	m_everyoneWashHand = false;
-	m_everyoneWearMask = false;
 	m_displayIntersection = false;
 	m_displayHeatMap = false;
 	m_displayMarker = false;
@@ -30,6 +28,9 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 	m_currentNode = m_city.building[0].node;
 	m_currentNodeMarker = sf::CircleShape(10);
 	m_currentNodeMarker.setFillColor(sf::Color::Blue);
+	m_nearCircle = sf::CircleShape(Settings::nearDistanceHuman);
+	m_nearCircle.setFillColor(sf::Color::Yellow);
+	m_nearCircle.setPosition(sf::Vector2f(-500, 500));
 	m_pause = false;
 
 	this->getPopulationSample();
@@ -52,20 +53,25 @@ void Sandbox::handleSettings()
 			std::string humanLabel = "Human [" + index + "] [" + getString(m_sample[i]->findCurrentAction(m_hourInDay)) + "]";
 
 			//Display their schedule life
-			if (ImGui::TreeNode(humanLabel.c_str()))
+			if (i == 0)
 			{
-				for (const auto& item : m_city.humans[i].lifeSchedule)
+				if (ImGui::TreeNode(humanLabel.c_str()))
 				{
-					ImGui::Text("from %ih00 to %ih00 : %s", item.first.first, item.first.second == 24 ? 0 : item.first.second, getString(item.second));
+					for (const auto& item : m_city.humans[i].lifeSchedule)
+					{
+						ImGui::Text("from %ih00 to %ih00 : %s", item.first.first, item.first.second == 24 ? 0 : item.first.second, getString(item.second));
+					}
+
+					ImGui::TreePop();
 				}
-
-				ImGui::TreePop();
 			}
-
-			ImGui::SetNextItemWidth(200);
-			ImGui::InputFloat2(std::string("Position##" + index).c_str(), &m_sample[i]->position.x, 0, ImGuiInputTextFlags_ReadOnly);
-			ImGui::SetNextItemWidth(200);
-			ImGui::InputFloat(std::string("Speed##" + index).c_str(), &m_sample[i]->speed, 100);
+			
+			ImGui::Text("Time near infected human : %f", &m_sample[i]->riskHumanTimer);
+			ImGui::Text("Time in infected zone : %f", &m_sample[i]->riskZoneTimer);
+			ImGui::Text("Infectiousness : %f", &m_sample[i]->infectiousness);
+			ImGui::Text("Position :	   [%f] [%f]", m_sample[i]->position.x, m_sample[i]->position.y);
+			ImGui::Text("Speed :		  %f", m_sample[i]->speed);
+			ImGui::Separator();
 		}
 
 		ImGui::TreePop();
@@ -87,9 +93,13 @@ void Sandbox::handleSettings()
 			}
 
 		ImGui::SeparatorText("Disease");
+			ImGui::SetNextItemWidth(200);
+			ImGui::DragFloat("Human near ray", &Settings::nearDistanceHuman, 0.1, 0.0, 100);
+			ImGui::SetNextItemWidth(200);
+			ImGui::DragFloat("Mortality", &Settings::mortality, 0.1, 0.0, 10);
 			ImGui::Checkbox("Display heatmap", &m_displayHeatMap);
-			ImGui::Checkbox("Everyone wash hand", &m_everyoneWashHand);
-			ImGui::Checkbox("Everyone wear mask", &m_everyoneWearMask);
+			ImGui::Checkbox("Everyone wash hand", &Settings::everyoneWashHand);
+			ImGui::Checkbox("Everyone wear mask", &Settings::everyoneWearMask);
 			
 		ImGui::SeparatorText("Temp");
 			ImGui::SetNextItemWidth(200);
@@ -98,12 +108,12 @@ void Sandbox::handleSettings()
 			ImGui::DragFloat("Min temp", &Settings::tempMin, 0.5);
 
 			ImGui::Dummy(ImVec2(0.0, 10.0));
-			ImGui::TextColored(ImVec4(0, 1, 0, 1), "Temp in C : %f", m_temp);
+			ImGui::TextColored(ImVec4(0, 1, 0, 1), "Temp in C : %f", Settings::temp);
 
 			static std::vector<float> tempRecords;
 			if (!m_pause)
 			{
-				tempRecords.push_back(m_temp);
+				tempRecords.push_back(Settings::temp);
 			}
 		
 			if (tempRecords.size() > 5000)
@@ -188,13 +198,15 @@ void Sandbox::update(float dt)
 		m_currentNodeMarker.setPosition(
 			m_currentNode->position - sf::Vector2f(m_currentNodeMarker.getRadius(), m_currentNodeMarker.getRadius())
 		);
+		m_nearCircle.setRadius(Settings::nearDistanceHuman);
+		
 	}
 
 	if (!m_pause)
 	{
 		m_time += dt * Settings::speed;
 		m_hourInDay = ((int)m_time + Settings::start_time) % 24;
-		m_temp = Math::getTemp((m_time / 720) * Settings::speed);
+		Settings::temp = Math::getTemp((m_time / 720) * Settings::speed);
 
 		if (m_hourInDay == 0 && m_lastHour != m_hourInDay)
 		{
@@ -248,6 +260,7 @@ void Sandbox::render()
 	if (m_displayMarker)
 	{
 		p_window->draw(m_currentNodeMarker);
+		p_window->draw(m_nearCircle);
 	}
 
 	if (m_displayHeatMap)

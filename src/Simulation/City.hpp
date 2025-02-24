@@ -13,6 +13,7 @@ class City
 public :
 	City();
 	void updateHeatMap();
+	float getInfectiousness(sf::Vector2f position);
 
 	std::vector<Building> building;
 	std::vector<Building*> entertainmentPlace;
@@ -36,6 +37,8 @@ public :
 private :
 	std::vector<Node> m_nodes;
 	sf::Vector2f m_caseSize;
+	int m_minCasePeople;
+	int m_maxCasePeople;
 
 	void setBuildType(Type type, int quantity);
 	void generateGrid();
