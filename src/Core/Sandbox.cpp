@@ -66,9 +66,9 @@ void Sandbox::handleSettings()
 				}
 			}
 			
-			ImGui::Text("Time near infected human : %f", &m_sample[i]->riskHumanTimer);
-			ImGui::Text("Time in infected zone : %f", &m_sample[i]->riskZoneTimer);
-			ImGui::Text("Infectiousness : %f", &m_sample[i]->infectiousness);
+			ImGui::Text("Time near infected human : %f", m_sample[i]->riskHumanTimer);
+			ImGui::Text("Time in infected zone : %f", m_sample[i]->riskZoneTimer);
+			ImGui::Text("Infectiousness : %f", m_sample[i]->infectiousness);
 			ImGui::Text("Position :	   [%f] [%f]", m_sample[i]->position.x, m_sample[i]->position.y);
 			ImGui::Text("Speed :		  %f", m_sample[i]->speed);
 			ImGui::Separator();
@@ -193,6 +193,11 @@ void Sandbox::handleSettings()
 
 void Sandbox::update(float dt)
 {
+	if (!ImGui::GetIO().WantCaptureMouse)
+	{
+		camera.move();
+	}
+
 	if (m_displayMarker)
 	{
 		m_currentNodeMarker.setPosition(
@@ -211,12 +216,7 @@ void Sandbox::update(float dt)
 		if (m_hourInDay == 0 && m_lastHour != m_hourInDay)
 		{
 			m_day++;
-		}
-
-		if (!ImGui::GetIO().WantCaptureMouse)
-		{
-			camera.move();
-		}	
+		} 
 
 		for (size_t i = 0; i < m_city.humans.size(); i++)
 		{

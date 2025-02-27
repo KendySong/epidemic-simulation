@@ -21,7 +21,7 @@ public :
 	
 	Building* home;
 	Building* work;
-	Building* current;
+	Node* current;
 
 	int id;
 	float health;

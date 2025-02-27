@@ -107,7 +107,7 @@ void City::updateHeatMap()
 		for (size_t x = 0; x < Settings::city_size.x; x++)
 		{
 			int index = y * Settings::city_size.x + x;
-			float t = m_minCasePeople != 0 && m_maxCasePeople != 0 && heatMap[index] != 0 ? Math::alerp(m_minCasePeople, m_maxCasePeople, heatMap[index]) : 0;
+			float t = Math::alerp(m_minCasePeople, m_maxCasePeople, heatMap[index]);
 
 			sf::Vector3f c = Math::lerp(sf::Vector3f(30, 255, 30), sf::Vector3f(255, 30, 30), t);
 			heatMapColor[index].setFillColor(sf::Color(c.x, c.y, c.z, 128));
@@ -121,7 +121,7 @@ float City::getInfectiousness(sf::Vector2f position)
 	int index = (int)caseEmplacement.y * Settings::city_size.x + (int)caseEmplacement.x;
 	if (index >= 0 && index < building.size() && heatMap.size() > 0)
 	{
-		float t = Math::alerp(m_minCasePeople, m_maxCasePeople, heatMap[index]);
+		return Math::alerp(m_minCasePeople, m_maxCasePeople, heatMap[index]);
 	}
 	return 0;
 }

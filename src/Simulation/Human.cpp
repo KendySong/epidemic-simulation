@@ -13,10 +13,11 @@ Human::Human(Building* home, std::vector<Building*>* entertainments, City* city,
 	//Rendering and pathfinding
 	this->id = id;
 	p_city = city;
-	this->isInfected = false;
 	this->home = home;
-	this->current = home;
+	this->isInfected = false;	
+	this->current = home->node;
 	this->position = home->position;
+	this->p_targetNode = nullptr;
 	speed = Math::random(Settings::avgHumanSpeed - Settings::avgHumanSpeed/10, Settings::avgHumanSpeed + Settings::avgHumanSpeed/10);
 
 	this->entertainments = entertainments;
@@ -66,7 +67,7 @@ Human::Human(Building* home, std::vector<Building*>* entertainments, City* city,
 
 void Human::draw(sf::RenderTarget& renderTarget)
 {
-	if (Math::distance(position, current->node->position) <= 10)
+	if (Math::distance(position, current->position) <= 10)
 	{
 		return;
 	}
@@ -83,7 +84,6 @@ Activities Human::findCurrentAction(int hourInDay)
 		if (hourInDay >= item.first.first && hourInDay <= item.first.second)
 		{
 			return item.second;
-			break;
 		}
 	}
 	return Activities::Undefined;
@@ -97,12 +97,13 @@ void Human::update(int hourInDay, float dt)
 		if (id != p_city->humans[i].id && Math::distance(position, p_city->humans[i].position) <= Settings::nearDistanceHuman && p_city->humans[i].isInfected)
 		{
 			riskHumanTimer += dt;
+			break;
 		}
 	}
-
+	
 	//Compute time in infected zone
 	riskZoneTimer += p_city->getInfectiousness(position) * dt;
-
+	
 	//Set if the human will be considered as infected or not
 	if (m_lastHour != hourInDay)
 	{	
@@ -113,6 +114,7 @@ void Human::update(int hourInDay, float dt)
 	{
 	case Activities::Sleep:
 		moveToTarget(home, dt);
+		//Add hp (max 100)
 		break;
 
 	case Activities::Home:
@@ -133,36 +135,39 @@ void Human::update(int hourInDay, float dt)
 
 void Human::updateInfection()
 {
-	if (!isInfected)
+	/*
+	if (isInfected)
+	{
+		//Remove hp
+	}
+	else
 	{
 		infectiousness = Settings::temp * (riskHumanTimer + riskZoneTimer) - Settings::everyoneWashHand - Settings::everyoneWearMask - immunitaryLevel;
 	}
-	
-	//remove health when infected
-	//kill
+	*/
 }
 
 void Human::moveToTarget(Building* target, float dt)
 {
-	if (current != target && !m_isMoving)
+	if (current != target->node && !m_isMoving)
 	{
-		m_path = Pathfinding::path(current->node, target->node);
+		m_path = Pathfinding::path(current, target->node);
 		m_isMoving = true;
 	}
 
-	if (m_isMoving && m_path.size() > 0)
+	if (m_isMoving && m_path.size() > 0 && m_indexNode < m_path.size())
 	{
-		if (Math::distance(m_path[m_indexNode]->position, position) <= 0.1)
+		if (Math::distance(m_path[m_indexNode]->position, position) <= 10)
 		{
-			m_indexNode++;
+			m_indexNode++;	
 		}
 
-		if (Math::distance(m_path[m_path.size() - 1]->position, position) <= 0.1)
+		if (Math::distance(m_path[m_path.size() - 1]->position, position) <= 10)
 		{
 			m_indexNode = 1;
 			m_path.clear();
 			m_isMoving = false;
-			current = target;
+			current = target->node;
 			return;
 		}
 
