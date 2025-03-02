@@ -47,10 +47,9 @@ void Sandbox::handleSettings()
 	ImGui::Spacing();
 
 	if (ImGui::TreeNodeEx("Graph"))
-	{
-		static std::vector<float> values = { 0.2f, 0.8f, 0.6f, 0.3f, 0.9f, 1.0f, 0.5f, 0.7f, 0.4f, 0.6f };
-		ImGui::PlotHistogram("Valeurs", values.data(), values.size(), 0, nullptr, 0.0f, 1.0f, ImVec2(0, 100));
-
+	{	
+		ImGui::PlotHistogram("##1", m_populationGraph.data(), m_populationGraph.size(), 0, "Population", 0.0f, m_city.humans.size() * 1.75, ImVec2(350, 100));
+		ImGui::PlotHistogram("##2", m_infectedGraph.data(), m_infectedGraph.size(), 0, "Infected", 0.0f, m_city.humans.size(), ImVec2(350, 100));
 		ImGui::TreePop();
 	}
 
@@ -265,10 +264,15 @@ void Sandbox::update(float dt)
 		m_hourInDay = ((int)m_time + Settings::start_time) % 24;
 		Settings::temp = Math::getTemp((m_time / 720) * Settings::speed);
 
-		if (m_hourInDay == 0 && m_lastHour != m_hourInDay)
+		if (m_lastHour != m_hourInDay)
 		{
-			m_day++;
-		} 
+			m_populationGraph.push_back(m_city.humans.size() - m_city.deadPopulation);
+			m_infectedGraph.push_back(m_city.infectedPopulation);
+			if (m_hourInDay == 0)
+			{
+				m_day++;
+			}
+		}
 
 		for (size_t i = 0; i < m_city.humans.size(); i++)
 		{

@@ -19,7 +19,6 @@ public :
 	std::vector<Building*> entertainmentPlace;
 	std::vector<Building*> workPlace;
 	std::vector<Human> humans;
-	std::vector<Human> deadHumans;
 	std::vector<Road> roads;
 
 	std::vector<int> heatMap;

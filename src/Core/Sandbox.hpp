@@ -42,6 +42,8 @@ private :
 	bool m_drawGrid;
 	bool m_drawPopulationGraph;
 	std::vector<bool> m_drawStateRoad;
+	std::vector<float> m_populationGraph;
+	std::vector<float> m_infectedGraph;
 
 	//Debug
 	bool m_displayHeatMap;
