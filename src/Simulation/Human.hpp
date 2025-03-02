@@ -32,6 +32,8 @@ public :
 	sf::Vector2f position;
 	bool isInHome;
 
+	int diseaseHp;
+
 	float infectiousness;
 	float immunitaryLevel;
 	float averageSleepTime;

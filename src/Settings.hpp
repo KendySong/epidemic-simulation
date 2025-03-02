@@ -39,10 +39,12 @@ public :
     static const int    max_health;
     static int          minRandomHealth;
 
-    //Dease
+    //Disease
     static float        mortality;
+    static const int    base_disease_hp;
     static int          nbStartInfectHuman;
     static float        aInfectiousness;
+    static float        infectiousness;
     static const int    limit_infection_random;
     static bool         everyoneWashHand;
     static bool         everyoneWearMask;

@@ -39,6 +39,7 @@ Human::Human(Building* home, std::vector<Building*>* entertainments, City* city,
 	lifeSchedule[std::pair<int, int>(hourToWork + 1, hourToWorkFinish)] = Activities::Work;
 	lifeSchedule[std::pair<int, int>(hourToWorkFinish + 1, hourToWorkFinish + 2)] = Activities::Home;
 	lifeSchedule[std::pair<int, int>(hourToWorkFinish + 3, hourToSleep - 1)] = Math::random(0, Settings::stayAtHomeProb) == 0 ? Activities::Home : Activities::Entertainment;
+	averageSleepTime = hourToSleep - 24 + hourToWork;
 
 	//Disease
 	switch (Math::random(0, 5))
@@ -60,9 +61,11 @@ Human::Human(Building* home, std::vector<Building*>* entertainments, City* city,
 
 	this->health = Math::random(Settings::minRandomHealth, Settings::max_health + 1);
 	immunitaryLevel = Math::getImmunitary(this->age);
+	qualityLevelFood = Math::random(0.0f, 1.0f);
 	infectiousness = 0;
 	riskHumanTimer = 0;
 	riskZoneTimer  = 0;
+	diseaseHp = 0;
 }
 
 void Human::draw(sf::RenderTarget& renderTarget)
@@ -121,7 +124,23 @@ void Human::update(int hourInDay, float dt)
 		moveToTarget(home, dt);
 		if (m_lastHour != hourInDay)
 		{
-			//Add hp and kill disease
+			if (status == Status::Infected)
+			{
+				//Heal the human when sleeping and kill the disease
+				float healthyLifestyle = (immunitaryLevel * qualityLevelFood * averageSleepTime) / 10;
+
+				if (health + healthyLifestyle <= Settings::max_health)
+				{
+					health += healthyLifestyle;
+				}
+
+				diseaseHp -= (100 - age) * healthyLifestyle;
+				if (diseaseHp <= 0)
+				{
+					status = Status::Alive;
+					p_city->infectedPopulation--;
+				}
+			}	
 		}
 		break;
 
@@ -150,15 +169,17 @@ void Human::updateInfection()
 		{
 			status = Status::Dead;
 			p_city->deadPopulation++;
+			p_city->infectedPopulation--;
 		}
 	}
 	else
 	{
 		infectiousness = (Settings::tempMax - Settings::temp) * (riskHumanTimer + riskZoneTimer) - (Settings::everyoneWashHand + Settings::everyoneWearMask + immunitaryLevel) * Settings::aInfectiousness;
 		float mu = Math::random(0.0, Settings::limit_infection_random);
-		if (mu <= infectiousness)
+		if (mu <= infectiousness * Settings::infectiousness)
 		{
 			status = Status::Infected;
+			diseaseHp = Settings::base_disease_hp;
 			p_city->infectedPopulation++;
 		}
 	}

@@ -73,6 +73,7 @@ City::City()
 	for (size_t i = 0; i < Settings::nbStartInfectHuman; i++)
 	{
 		humans[i].status = Status::Infected;
+		humans[i].diseaseHp = Settings::base_disease_hp;
 	}
 }
 

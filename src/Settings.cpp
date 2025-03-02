@@ -36,12 +36,14 @@ int                 Settings::stayAtHomeProb = 3;
 float               Settings::avgHumanSpeed = 1000;
 
 const int           Settings::max_health = 100;
-int                 Settings::minRandomHealth = 90;                              
+int                 Settings::minRandomHealth = 90;
 
 //Desease
-float               Settings::mortality = 50;
+float               Settings::mortality = 75;
+const int           Settings::base_disease_hp = 9000;
 int                 Settings::nbStartInfectHuman = 100;
 float               Settings::aInfectiousness = 10;
+float               Settings::infectiousness = 1;
 const int           Settings::limit_infection_random = 100000;
 bool                Settings::everyoneWashHand = false;
 bool                Settings::everyoneWearMask = false;

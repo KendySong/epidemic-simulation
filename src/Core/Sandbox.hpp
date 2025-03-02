@@ -21,7 +21,7 @@ public :
 
 private :
 	void getPopulationSample();
-	void healthBar(int currentHp);
+	void healthBar(float current, float max, ImVec4 color);
 
 	sf::RenderWindow* p_window;
 
@@ -40,6 +40,7 @@ private :
 	
 	//Gui
 	bool m_drawGrid;
+	bool m_drawPopulationGraph;
 	std::vector<bool> m_drawStateRoad;
 
 	//Debug

@@ -41,9 +41,18 @@ void Sandbox::handleSettings()
 {
 	ImGui::SeparatorText("City information");
 
-	ImGui::TextColored(ImVec4(0, 1, 0, 1),   "Total population  :		%i", m_city.humans.size());
+	ImGui::TextColored(ImVec4(0, 1, 0, 1),   "Total population  :		%i", m_city.humans.size() - m_city.deadPopulation);
 	ImGui::TextColored(ImVec4(1, 0.5, 0, 1), "Total infected    :		%i", m_city.infectedPopulation);
 	ImGui::TextColored(ImVec4(1, 0, 0, 1),   "Total dead		:		%i", m_city.deadPopulation);
+	ImGui::Spacing();
+
+	if (ImGui::TreeNodeEx("Graph"))
+	{
+		static std::vector<float> values = { 0.2f, 0.8f, 0.6f, 0.3f, 0.9f, 1.0f, 0.5f, 0.7f, 0.4f, 0.6f };
+		ImGui::PlotHistogram("Valeurs", values.data(), values.size(), 0, nullptr, 0.0f, 1.0f, ImVec2(0, 100));
+
+		ImGui::TreePop();
+	}
 
 	ImGui::Spacing();
 	ImGui::Text("Number of home :		  %i", m_city.homeRepartition);
@@ -87,7 +96,19 @@ void Sandbox::handleSettings()
 				break;
 			}
 			
-			this->healthBar(m_sample[i]->health);
+			this->healthBar(m_sample[i]->health, Settings::max_health, ImVec4(0, 1, 0, 1));
+			ImGui::SameLine();
+			ImGui::Text("HP : [%i/%i]", (int)m_sample[i]->health, Settings::max_health);
+
+			if (m_sample[i]->status == Status::Infected)
+			{
+
+				this->healthBar(m_sample[i]->diseaseHp, Settings::base_disease_hp, ImVec4(0, 1, 0, 1));
+				ImGui::SameLine();
+				ImGui::Text("Disease HP : [%i/%i]", m_sample[i]->diseaseHp, Settings::base_disease_hp);
+
+			}
+
 			ImGui::Text("Age					  : %i", m_sample[i]->age);
 			ImGui::Text("Time near infected human : %f", m_sample[i]->riskHumanTimer);
 			ImGui::Text("Time in infected zone    : %f", m_sample[i]->riskZoneTimer);
@@ -120,6 +141,8 @@ void Sandbox::handleSettings()
 		ImGui::SeparatorText("Disease");
 			ImGui::SetNextItemWidth(200);
 			ImGui::DragFloat("Mortality", &Settings::mortality, 0.5, 0.0, 500);
+			ImGui::SetNextItemWidth(200);
+			ImGui::DragFloat("Infectiousness", &Settings::infectiousness, 0.5, 0.0, 5);
 			ImGui::SetNextItemWidth(200);
 			ImGui::DragFloat("Inverse infectiousness", &Settings::aInfectiousness, 0.5, 0.0, 500);	
 			ImGui::SetNextItemWidth(200);
@@ -339,14 +362,11 @@ void Sandbox::getPopulationSample()
 	}
 }
 
-void Sandbox::healthBar(int currentHp)
+void Sandbox::healthBar(float current, float max, ImVec4 color)
 {
 	static ImVec2 size = ImVec2(200.0f, 20.0f);
-	float progress = (float)currentHp / (float)Settings::max_health;
+	float progress = current / max;
 	ImGui::PushStyleColor(ImGuiCol_PlotHistogram, progress >= 0.5 ? ImVec4(0, 1, 0, 1) : ImVec4(1, 0.5, 0, 1));
 	ImGui::ProgressBar(progress, size, "");
 	ImGui::PopStyleColor();
-
-	ImGui::SameLine();
-	ImGui::Text("HP : [%i/%i]", currentHp, Settings::max_health);
 }
