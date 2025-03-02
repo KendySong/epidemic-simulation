@@ -34,17 +34,23 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 	m_pause = false;
 
 	this->getPopulationSample();
+	m_basePopulation = m_city.humans.size();
 }
 
 void Sandbox::handleSettings()
 {
 	ImGui::SeparatorText("City information");
 
-	ImGui::TextColored(ImVec4(0, 1, 0, 1), "Total population :		%i", m_city.humans.size());
+	ImGui::TextColored(ImVec4(0, 1, 0, 1),   "Total population  :		%i", m_city.humans.size());
+	ImGui::TextColored(ImVec4(1, 0.5, 0, 1), "Total infected    :		%i", m_city.infectedPopulation);
+	ImGui::TextColored(ImVec4(1, 0, 0, 1),   "Total dead		:		%i", m_city.deadPopulation);
+
+	ImGui::Spacing();
 	ImGui::Text("Number of home :		  %i", m_city.homeRepartition);
 	ImGui::Text("Number of work :		  %i", m_city.workRepartition);
 	ImGui::Text("Number of entertainment : %i", m_city.entertainmentRepartition);
 
+	ImGui::Spacing();
 	if (ImGui::TreeNode("Population info"))
 	{
 		for (size_t i = 0; i < m_sample.size(); i++)
@@ -65,17 +71,36 @@ void Sandbox::handleSettings()
 					ImGui::TreePop();
 				}
 			}
+
+			switch (m_sample[i]->status)
+			{
+			case Status::Alive:
+				ImGui::TextColored(ImVec4(0, 1, 0, 1), "State : Alive");
+				break;
+
+			case Status::Infected:
+				ImGui::TextColored(ImVec4(1, 0.5, 0, 1), "State : Infected");
+				break;
+
+			case Status::Dead:
+				ImGui::TextColored(ImVec4(1, 0, 0, 1), "State : Dead");
+				break;
+			}
 			
+			this->healthBar(m_sample[i]->health);
+			ImGui::Text("Age					  : %i", m_sample[i]->age);
 			ImGui::Text("Time near infected human : %f", m_sample[i]->riskHumanTimer);
-			ImGui::Text("Time in infected zone : %f", m_sample[i]->riskZoneTimer);
-			ImGui::Text("Infectiousness : %f", m_sample[i]->infectiousness);
-			ImGui::Text("Position :	   [%f] [%f]", m_sample[i]->position.x, m_sample[i]->position.y);
-			ImGui::Text("Speed :		  %f", m_sample[i]->speed);
+			ImGui::Text("Time in infected zone    : %f", m_sample[i]->riskZoneTimer);
+			ImGui::Text("Infectiousness		   : %f", m_sample[i]->infectiousness);
+			ImGui::Text("Immunitary system	    : %f", m_sample[i]->immunitaryLevel);
+			ImGui::Text("Position			     : [%f] [%f]", m_sample[i]->position.x, m_sample[i]->position.y);
+			ImGui::Text("Speed				    : %f", m_sample[i]->speed);
 			ImGui::Separator();
 		}
 
 		ImGui::TreePop();
 	}
+	ImGui::Spacing();
 
 	ImGui::Separator();
 	if (ImGui::TreeNodeEx("Simulation", ImGuiTreeNodeFlags_DefaultOpen))
@@ -94,9 +119,13 @@ void Sandbox::handleSettings()
 
 		ImGui::SeparatorText("Disease");
 			ImGui::SetNextItemWidth(200);
-			ImGui::DragFloat("Human near ray", &Settings::nearDistanceHuman, 0.1, 0.0, 100);
+			ImGui::DragFloat("Mortality", &Settings::mortality, 0.5, 0.0, 500);
 			ImGui::SetNextItemWidth(200);
-			ImGui::DragFloat("Mortality", &Settings::mortality, 0.1, 0.0, 10);
+			ImGui::DragFloat("Inverse infectiousness", &Settings::aInfectiousness, 0.5, 0.0, 500);	
+			ImGui::SetNextItemWidth(200);
+			ImGui::DragFloat("Human near ray", &Settings::nearDistanceHuman, 0.1, 0.0, 100);
+			ImGui::Spacing();
+
 			ImGui::Checkbox("Display heatmap", &m_displayHeatMap);
 			ImGui::Checkbox("Everyone wash hand", &Settings::everyoneWashHand);
 			ImGui::Checkbox("Everyone wear mask", &Settings::everyoneWearMask);
@@ -220,7 +249,10 @@ void Sandbox::update(float dt)
 
 		for (size_t i = 0; i < m_city.humans.size(); i++)
 		{
-			m_city.humans[i].update(m_hourInDay, dt);
+			if (m_city.humans[i].status != Status::Dead)
+			{
+				m_city.humans[i].update(m_hourInDay, dt);
+			}		
 		}
 
 		m_city.updateHeatMap();
@@ -246,7 +278,10 @@ void Sandbox::render()
 
 	for (size_t i = 0; i < m_city.humans.size(); i++)
 	{
-		m_city.humans[i].draw(*p_window);
+		if (m_city.humans[i].status != Status::Dead)
+		{
+			m_city.humans[i].draw(*p_window);
+		}	
 	}
 
 	if (m_displayIntersection)
@@ -284,9 +319,34 @@ void Sandbox::getPopulationSample()
 	}
 
 	std::shuffle(humansID.begin(), humansID.end(), s);
-	m_sample.reserve(Settings::human_per_home / 2);
-	for (size_t i = 0; i < Settings::human_per_home / 2; i++)
+	
+	for (size_t i = 0; i < humansID.size(); i++)
 	{
-		m_sample.push_back(&m_city.humans[humansID[i]]);
+		if (m_city.humans[humansID[i]].status != Status::Infected)
+		{
+			m_sample.push_back(&m_city.humans[humansID[i]]);
+			break;
+		}
 	}
+
+	for (size_t i = 0; i < humansID.size(); i++)
+	{
+		if (m_city.humans[humansID[i]].status == Status::Infected)
+		{
+			m_sample.push_back(&m_city.humans[humansID[i]]);
+			break;
+		}
+	}
+}
+
+void Sandbox::healthBar(int currentHp)
+{
+	static ImVec2 size = ImVec2(200.0f, 20.0f);
+	float progress = (float)currentHp / (float)Settings::max_health;
+	ImGui::PushStyleColor(ImGuiCol_PlotHistogram, progress >= 0.5 ? ImVec4(0, 1, 0, 1) : ImVec4(1, 0.5, 0, 1));
+	ImGui::ProgressBar(progress, size, "");
+	ImGui::PopStyleColor();
+
+	ImGui::SameLine();
+	ImGui::Text("HP : [%i/%i]", currentHp, Settings::max_health);
 }

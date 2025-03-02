@@ -5,6 +5,7 @@
 
 #include "Activities.hpp"
 #include "Node.hpp"
+#include "Status.hpp"
 
 class City;
 class Building;
@@ -26,7 +27,7 @@ public :
 	int id;
 	float health;
 	float speed;
-	bool isInfected;
+	Status status;
 	sf::CircleShape body;
 	sf::Vector2f position;
 	bool isInHome;

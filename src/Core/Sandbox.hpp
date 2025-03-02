@@ -21,6 +21,7 @@ public :
 
 private :
 	void getPopulationSample();
+	void healthBar(int currentHp);
 
 	sf::RenderWindow* p_window;
 
@@ -35,7 +36,7 @@ private :
 	City m_city;	
 	int m_day;
 	int m_lastHour;
-
+	int m_basePopulation;
 	
 	//Gui
 	bool m_drawGrid;

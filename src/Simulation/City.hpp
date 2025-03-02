@@ -19,6 +19,7 @@ public :
 	std::vector<Building*> entertainmentPlace;
 	std::vector<Building*> workPlace;
 	std::vector<Human> humans;
+	std::vector<Human> deadHumans;
 	std::vector<Road> roads;
 
 	std::vector<int> heatMap;
@@ -33,6 +34,8 @@ public :
 	int homeRepartition;
 	int workRepartition;
 	int entertainmentRepartition;
+	int infectedPopulation;
+	int deadPopulation;
 
 private :
 	std::vector<Node> m_nodes;

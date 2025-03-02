@@ -67,9 +67,12 @@ City::City()
 		humans[i].work = workPlace[Math::random(0, workPlace.size()-1)];
 	}
 
+	//Start disease
+	deadPopulation = 0;
+	infectedPopulation = Settings::nbStartInfectHuman;
 	for (size_t i = 0; i < Settings::nbStartInfectHuman; i++)
 	{
-		humans[i].isInfected = true;
+		humans[i].status = Status::Infected;
 	}
 }
 
@@ -80,7 +83,7 @@ void City::updateHeatMap()
 	{
 		sf::Vector2f caseEmplacement = humans[i].position / m_caseSize;
 		int index = (int)caseEmplacement.y * Settings::city_size.x + (int)caseEmplacement.x;
-		if (index >= 0 && index < building.size() && humans[i].isInfected)
+		if (index >= 0 && index < building.size() && humans[i].status == Status::Infected)
 		{
 			heatMap[index]++;
 		}	

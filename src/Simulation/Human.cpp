@@ -14,7 +14,7 @@ Human::Human(Building* home, std::vector<Building*>* entertainments, City* city,
 	this->id = id;
 	p_city = city;
 	this->home = home;
-	this->isInfected = false;	
+	status == Status::Alive;
 	this->current = home->node;
 	this->position = home->position;
 	this->p_targetNode = nullptr;
@@ -58,7 +58,7 @@ Human::Human(Building* home, std::vector<Building*>* entertainments, City* city,
 		break;
 	}
 
-	this->health = Math::random(80, 101);
+	this->health = Math::random(Settings::minRandomHealth, Settings::max_health + 1);
 	immunitaryLevel = Math::getImmunitary(this->age);
 	infectiousness = 0;
 	riskHumanTimer = 0;
@@ -73,7 +73,7 @@ void Human::draw(sf::RenderTarget& renderTarget)
 	}
 
 	body.setPosition(position - sf::Vector2f(body.getRadius(), body.getRadius()));
-	body.setFillColor(isInfected ? sf::Color::Red : sf::Color::Green);
+	body.setFillColor(status == Status::Infected ? sf::Color::Red : sf::Color::Green);
 	renderTarget.draw(body);
 }
 
@@ -91,18 +91,23 @@ Activities Human::findCurrentAction(int hourInDay)
 
 void Human::update(int hourInDay, float dt)
 {
-	//Compute time in infected zone
-	for (size_t i = 0; i < p_city->humans.size(); i++)
+	if (status == Status::Alive)
 	{
-		if (id != p_city->humans[i].id && Math::distance(position, p_city->humans[i].position) <= Settings::nearDistanceHuman && p_city->humans[i].isInfected)
+		//Compute time in infected zone
+		for (size_t i = 0; i < p_city->humans.size(); i++)
 		{
-			riskHumanTimer += dt;
-			break;
+			if (id != p_city->humans[i].id &&
+				Math::distance(position, p_city->humans[i].position) <= Settings::nearDistanceHuman && 
+				p_city->humans[i].status == Status::Infected)
+			{
+				riskHumanTimer += dt * Settings::speed;
+				break;
+			}
 		}
+
+		//Compute time in infected zone
+		riskZoneTimer += p_city->getInfectiousness(position) * dt * Settings::speed;
 	}
-	
-	//Compute time in infected zone
-	riskZoneTimer += p_city->getInfectiousness(position) * dt;
 	
 	//Set if the human will be considered as infected or not
 	if (m_lastHour != hourInDay)
@@ -114,7 +119,10 @@ void Human::update(int hourInDay, float dt)
 	{
 	case Activities::Sleep:
 		moveToTarget(home, dt);
-		//Add hp (max 100)
+		if (m_lastHour != hourInDay)
+		{
+			//Add hp and kill disease
+		}
 		break;
 
 	case Activities::Home:
@@ -135,16 +143,25 @@ void Human::update(int hourInDay, float dt)
 
 void Human::updateInfection()
 {
-	/*
-	if (isInfected)
+	if (status == Status::Infected)
 	{
-		//Remove hp
+		this->health -= Settings::mortality / immunitaryLevel;
+		if (this->health <= 0)
+		{
+			status = Status::Dead;
+			p_city->deadPopulation++;
+		}
 	}
 	else
 	{
-		infectiousness = Settings::temp * (riskHumanTimer + riskZoneTimer) - Settings::everyoneWashHand - Settings::everyoneWearMask - immunitaryLevel;
+		infectiousness = (Settings::tempMax - Settings::temp) * (riskHumanTimer + riskZoneTimer) - (Settings::everyoneWashHand + Settings::everyoneWearMask + immunitaryLevel) * Settings::aInfectiousness;
+		float mu = Math::random(0.0, Settings::limit_infection_random);
+		if (mu <= infectiousness)
+		{
+			status = Status::Infected;
+			p_city->infectedPopulation++;
+		}
 	}
-	*/
 }
 
 void Human::moveToTarget(Building* target, float dt)

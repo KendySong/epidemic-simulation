@@ -36,10 +36,14 @@ public :
     static int          stayAtHomeProb;
     static float        avgHumanSpeed;
 
+    static const int    max_health;
+    static int          minRandomHealth;
+
     //Dease
     static float        mortality;
     static int          nbStartInfectHuman;
-    static float        infectiousness;
+    static float        aInfectiousness;
+    static const int    limit_infection_random;
     static bool         everyoneWashHand;
     static bool         everyoneWearMask;
     static float        nearDistanceHuman;
