@@ -70,6 +70,7 @@ City::City()
 	//Start disease
 	deadPopulation = 0;
 	infectedPopulation = Settings::nbStartInfectHuman;
+	Settings::nearDistanceHuman = m_caseSize.x > m_caseSize.y ? m_caseSize.x : m_caseSize.y;
 	for (size_t i = 0; i < Settings::nbStartInfectHuman; i++)
 	{
 		humans[i].status = Status::Infected;

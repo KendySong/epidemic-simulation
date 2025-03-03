@@ -35,6 +35,10 @@ Sandbox::Sandbox(sf::RenderWindow* window)
 
 	this->getPopulationSample();
 	m_basePopulation = m_city.humans.size();
+
+	m_hourInDay = ((int)m_time + Settings::start_time) % 24;
+	Settings::temp = Math::getTemp((m_time / 720) * Settings::speed);
+	m_pause = true;
 }
 
 void Sandbox::handleSettings()
@@ -73,7 +77,7 @@ void Sandbox::handleSettings()
 				{
 					for (const auto& item : m_city.humans[i].lifeSchedule)
 					{
-						ImGui::Text("from %ih00 to %ih00 : %s", item.first.first, item.first.second == 24 ? 0 : item.first.second, getString(item.second));
+						ImGui::Text("from %ih00 to %ih00 : %s", item.first.first, item.first.second == 24 ? 0 : item.first.second, getString(item.second).c_str());
 					}
 
 					ImGui::TreePop();

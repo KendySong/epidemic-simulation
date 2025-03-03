@@ -14,7 +14,7 @@ Human::Human(Building* home, std::vector<Building*>* entertainments, City* city,
 	this->id = id;
 	p_city = city;
 	this->home = home;
-	status == Status::Alive;
+	status = Status::Alive;
 	this->current = home->node;
 	this->position = home->position;
 	this->p_targetNode = nullptr;
