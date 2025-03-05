@@ -4,7 +4,7 @@ Simulation of epidemic spread in a city
 ## Building
 ```git
 - git clone https://github.com/KendySong/epidemic-simulation.git
-- cd epidemic-simulatio
+- cd epidemic-simulation
 - premake5 vs2022
 ```
 
