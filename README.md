@@ -1,5 +1,5 @@
 # epidemic-simulation
-Simulation of epidemic spread in a city
+Simulation of an epidemic spread in a procedurally generated city
 
 ## Building
 ```git
