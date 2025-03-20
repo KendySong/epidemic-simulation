@@ -20,7 +20,7 @@ float               Settings::zoom = 1;
 
 //City
 const float         Settings::home_size = 25;
-const sf::Vector2f  Settings::city_size = sf::Vector2f(13, 7);              //x and y component is better when odd
+const sf::Vector2f  Settings::city_size = sf::Vector2f(17, 9);              //x and y component is better when odd
 const float         Settings::home_repartition = 0.5;                       //Pourcent of building will be set to home
 const float         Settings::work_repartition = 0.40;
 const float         Settings::entertainment_repartition = 0.10;             //Sum of repartition must be 1

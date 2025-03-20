@@ -26,7 +26,6 @@ City::City()
 			heatMapColor.emplace_back(m_caseSize);
 			heatMapColor[index].setPosition(sf::Vector2f(x * m_caseSize.x, y * m_caseSize.y));
 
-
 			m_nodes.emplace_back();
 			Building build = Building(Math::random(
 				x * m_caseSize.x, (x + 1) * m_caseSize.x,
